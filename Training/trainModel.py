@@ -1,5 +1,7 @@
 import sys, os
 import tensorflow as tf
+from tensorflow import keras
+from tensorflow.keras import layers
 from tensorflow.python.ops.gen_batch_ops import batch
 
 batchSize = 32
@@ -17,9 +19,6 @@ def main():
         print(f"Directory {dataSetDir} does not exist.")
         sys.exit(1)
 
-    dataset = createDataset(dataSetDir)
-
-def createDataset(dataSetDir):
     print(f"Creating dataset from {dataSetDir} directory...")
     trainingDataset = tf.keras.preprocessing.image_dataset_from_directory(
         dataSetDir,
@@ -37,6 +36,49 @@ def createDataset(dataSetDir):
         image_size=(imgHeight, imgWidth),
         batch_size=batchSize
     )
+    print(f"Found class names {trainingDataset.class_names}")
+
+    # Configure dataset for performance
+    AUTOTUNE = tf.data.experimental.AUTOTUNE
+    trainingDataset = trainingDataset.cache().shuffle(1000).prefetch(buffer_size=AUTOTUNE)
+    validationDataset = validationDataset.cache().prefetch(buffer_size=AUTOTUNE)
+
+    # Standardize data (rescale rgb values from 0-255 to 0-1)
+    normalizationLayer = layers.experimental.preprocessing.Rescaling(1./255)
+
+    # Create model (model shape and size to be investigated, maybe improved)
+
+    classNo = 5
+    model = keras.Sequential([
+        layers.experimental.preprocessing.Rescaling(1./255, input_shape=(imgHeight, imgWidth, 3)),
+        # layers.Conv2D(16, 3, padding='same', activation='relu'),
+        # layers.MaxPooling2D(),
+        # layers.Conv2D(32, 3, padding='same', activation='relu'),
+        # layers.MaxPooling2D(),
+        # layers.Conv2D(64, 3, padding='same', activation='relu'),
+        # layers.MaxPooling2D(),
+        # layers.Flatten(),
+        layers.Dense(128, activation='relu'),
+        layers.Dense(classNo)    ])
+
+    # Compile model
+    model.compile(
+        optimizer='adam',
+        loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+        metrics=['accuracy']
+    )
+    print("Model summary:")
+    print(model.summary())
+
+    # Train model
+    epochs=10
+    history = model.fit(
+        trainingDataset,
+        validation_data=validationDataset,
+        epochs=epochs
+    )
+
+
 
 
 if __name__ == "__main__":
