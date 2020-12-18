@@ -4,7 +4,7 @@ from tensorflow import keras
 from tensorflow.keras import layers
 from tensorflow.python.ops.gen_batch_ops import batch
 
-batchSize = 32
+batchSize = 1
 imgHeight = 762
 imgWidth = 562
 
