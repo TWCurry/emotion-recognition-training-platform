@@ -51,16 +51,16 @@ def main():
     classNo = 7
     model = keras.Sequential([
         layers.experimental.preprocessing.Rescaling(1./255, input_shape=(imgHeight, imgWidth, 3)),
-        layers.experimental.preprocessing.RandomFlip("horizontal", input_shape=(imgHeight, imgWidth,3)), # Data augmentation
-        layers.experimental.preprocessing.RandomRotation(0.1),# Data augmentation
-        layers.experimental.preprocessing.RandomZoom(0.1), # Data augmentation
+        # layers.experimental.preprocessing.RandomFlip("horizontal", input_shape=(imgHeight, imgWidth,3)), # Data augmentation
+        # layers.experimental.preprocessing.RandomRotation(0.1),# Data augmentation
+        # layers.experimental.preprocessing.RandomZoom(0.1), # Data augmentation
         layers.Conv2D(16, 3, padding='same', activation='relu'),
         layers.MaxPooling2D(),
         layers.Conv2D(32, 3, padding='same', activation='relu'),
         layers.MaxPooling2D(),
         layers.Conv2D(64, 3, padding='same', activation='relu'),
         layers.MaxPooling2D(),
-        layers.Dropout(0.2), # Dropout (for regularisation)
+        # layers.Dropout(0.2), # Dropout (for regularisation)
         layers.Flatten(),
         layers.Dense(128, activation='relu'),
         layers.Dense(classNo)    ])

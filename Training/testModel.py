@@ -17,7 +17,7 @@ def main():
         sys.exit(1)
 
     model = keras.models.load_model(modelDir)
-    testImg = keras.preprocessing.image.load_img("dataSet/test2.jpg")
+    testImg = keras.preprocessing.image.load_img("dataSet/test5.jpg")
     testArr = keras.preprocessing.image.img_to_array(testImg)
     testArr = np.array([testArr])
     probabilityModel = tf.keras.Sequential([model,tf.keras.layers.Softmax()]) # Create model to convert logits to probabilities
