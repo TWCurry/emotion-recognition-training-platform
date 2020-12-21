@@ -1,87 +1,117 @@
 import sys, os
 import tensorflow as tf
+import numpy as np
 from tensorflow import keras
 from tensorflow.keras import layers
-from tensorflow.python.ops.gen_batch_ops import batch
+from tensorflow.keras.callbacks import ReduceLROnPlateau, TensorBoard, EarlyStopping, ModelCheckpoint
 
-batchSize = 10
-imgHeight = 762
-imgWidth = 562
+batchSize = 50
+imgHeight = 48
+imgWidth = 48
+emotionCodes = ["AN", "DI", "FE", "HA", "SA", "SU", "NE"]
 
 def main():
     try:
-        dataSetDir = sys.argv[1]
+        dataSetPath = sys.argv[1]
     except Exception as e:
         print("Invalid parameters.")
         sys.exit(1)
-    
-    if not (os.path.exists(dataSetDir)):
-        print(f"Directory {dataSetDir} does not exist.")
+
+    try:
+        with open(dataSetPath) as f:
+            csvData = f.read().splitlines()
+    except Exception as e:
+        print(f"Could not read {dataSetPath} - {e}")
         sys.exit(1)
 
-    print(f"Creating dataset from {dataSetDir} directory...")
-    trainingDataset = tf.keras.preprocessing.image_dataset_from_directory(
-        dataSetDir,
-        validation_split=0.2, # 20% of images will be used for validation
-        subset="training",
-        seed=123,
-        image_size=(imgHeight, imgWidth),
-        batch_size=batchSize
-    )
-    validationDataset = tf.keras.preprocessing.image_dataset_from_directory(
-        dataSetDir,
-        validation_split=0.2, # 20% of images will be used for validation
-        subset="validation",
-        seed=123,
-        image_size=(imgHeight, imgWidth),
-        batch_size=batchSize
-    )
-    print(f"Found class names {trainingDataset.class_names}")
+    print(f"Creating dataset from {dataSetPath} ...")
+    trainingData = []
+    trainingLabels = []
+    validationData = []
+    validationLabels = []
+    firstRecord = True
+    for row in csvData: #For each record in csv (apart from first headers row)
+        row = row.split(",")
+        if firstRecord:
+            firstRecord = False
+        else:
+            record = {"emotion": int(row[0]), "pixels": row[1], "usage": row[2]}
+            pixels = record['pixels'].split(" ") # Split pixels into array, separated by space
+            for i in range(len(pixels)): #Force conversion to integer
+                pixels[i] = int(pixels[i])
+            if record['usage'] == 'Training':
+                trainingData.append(np.array(pixels))
+                trainingLabels.append(int(record['emotion']))
+            elif record['usage'] == 'PublicTest':
+                validationLabels.append(int(record['emotion']))
+                validationData.append(np.array(pixels))
+    
+    # Convert to numpy array
+    trainingData = np.array(trainingData)
+    trainingLabels = np.array(trainingLabels)
+    validationData = np.array(validationData)
+    validationLabels = np.array(validationLabels)
 
-    # Configure dataset for performance
-    AUTOTUNE = tf.data.experimental.AUTOTUNE
-    trainingDataset = trainingDataset.cache().shuffle(1000).prefetch(buffer_size=AUTOTUNE)
-    validationDataset = validationDataset.cache().prefetch(buffer_size=AUTOTUNE)
+    trainingData = trainingData.reshape(trainingData.shape[0], 48, 48, 1)
+    validationData = validationData.reshape(validationData.shape[0], 48, 48, 1)
 
-    # Standardize data (rescale rgb values from 0-255 to 0-1)
-    normalizationLayer = layers.experimental.preprocessing.Rescaling(1./255)
+    trainingLabels= keras.utils.to_categorical(trainingLabels, num_classes=7)
+    validationLabels = keras.utils.to_categorical(validationLabels, num_classes=7)
+
+    # Create augmented data
+    augmentedData = keras.Sequential([
+        layers.experimental.preprocessing.RandomFlip("horizontal", input_shape=(imgHeight, imgWidth, 1)),
+        layers.experimental.preprocessing.RandomRotation(0.1),
+        layers.experimental.preprocessing.RandomZoom(0.1),
+    ])
 
     # Create model (model shape and size to be investigated, maybe improved)
-
-    classNo = 7
     model = keras.Sequential([
-        layers.experimental.preprocessing.Rescaling(1./255, input_shape=(imgHeight, imgWidth, 3)),
-        # layers.experimental.preprocessing.RandomFlip("horizontal", input_shape=(imgHeight, imgWidth,3)), # Data augmentation
-        # layers.experimental.preprocessing.RandomRotation(0.1),# Data augmentation
-        # layers.experimental.preprocessing.RandomZoom(0.1), # Data augmentation
-        layers.Conv2D(16, 3, padding='same', activation='relu'),
-        layers.MaxPooling2D(),
-        layers.Conv2D(32, 3, padding='same', activation='relu'),
-        layers.MaxPooling2D(),
-        layers.Conv2D(64, 3, padding='same', activation='relu'),
-        layers.MaxPooling2D(),
-        # layers.Dropout(0.2), # Dropout (for regularisation)
+        augmentedData,
+        layers.ZeroPadding2D((1, 1), input_shape=(48,48,1)),
+        layers.Convolution2D(32, 3, 3, activation='relu'),
+        layers.ZeroPadding2D((1,1)),
+        layers.Convolution2D(64, 3, 3, activation='relu'),
+        layers.ZeroPadding2D((2,2)),
+        layers.Convolution2D(128, 3, 3, activation='relu'),
+        layers.ZeroPadding2D((1,1)),
         layers.Flatten(),
-        layers.Dense(128, activation='relu'),
-        layers.Dense(classNo)    ])
+        layers.Dense(256, activation='relu'),
+        layers.Dropout(0.2),
+        layers.Dense(512, activation='relu'),
+        layers.Dropout(0.2),
+        layers.Dense(7, activation='softmax')
+    ])
 
     # Compile model
     model.compile(
         optimizer='adam',
-        loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+        loss=tf.keras.losses.CategoricalCrossentropy(from_logits=True),
         metrics=['accuracy']
     )
     print("Model summary:")
     print(model.summary())
 
+    # Add callbacks
+    cbLrReducer = ReduceLROnPlateau(monitor='val_loss', factor=0.9, patience=3, verbose=1) # Reduce learning rate if there is no improvement on the value of the loss function
+    cbEarlyStopper = EarlyStopping(monitor='val_loss', min_delta=0, patience=8, verbose=1, mode='auto') # Stop training the model if it's overfitting
+    cbCheckpoint = ModelCheckpoint("outputModel2", monitor='val_accuracy', verbose=1, save_best_only=True) # Save model at the end of the epoch (if there's an improvement on the previous epoch's accuracy)
+
     # Train model
-    epochs=10
+    epochs=30
     model.fit(
-        trainingDataset,
-        validation_data=validationDataset,
-        epochs=epochs
+        trainingData,
+        trainingLabels,
+        validation_data=(validationData, validationLabels),
+        batch_size=batchSize,
+        epochs=epochs,
+        callbacks=[cbLrReducer, cbEarlyStopper, cbCheckpoint]
     )
-    model.save("outputModel")
+    scores = model.evaluate(np.array(validationData), np.array(validationLabels), batch_size=batchSize)
+    print(f"Loss: {scores[0]}")
+    print(f"Accuracy: {int(scores[1])*100}%")
+    model.save("outputModel2")
+    
 
 if __name__ == "__main__":
     main()
