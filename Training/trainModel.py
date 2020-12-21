@@ -4,7 +4,7 @@ from tensorflow import keras
 from tensorflow.keras import layers
 from tensorflow.python.ops.gen_batch_ops import batch
 
-batchSize = 1
+batchSize = 10
 imgHeight = 762
 imgWidth = 562
 
@@ -51,12 +51,16 @@ def main():
     classNo = 7
     model = keras.Sequential([
         layers.experimental.preprocessing.Rescaling(1./255, input_shape=(imgHeight, imgWidth, 3)),
+        layers.experimental.preprocessing.RandomFlip("horizontal", input_shape=(imgHeight, imgWidth,3)), # Data augmentation
+        layers.experimental.preprocessing.RandomRotation(0.1),# Data augmentation
+        layers.experimental.preprocessing.RandomZoom(0.1), # Data augmentation
         layers.Conv2D(16, 3, padding='same', activation='relu'),
         layers.MaxPooling2D(),
         layers.Conv2D(32, 3, padding='same', activation='relu'),
         layers.MaxPooling2D(),
         layers.Conv2D(64, 3, padding='same', activation='relu'),
         layers.MaxPooling2D(),
+        layers.Dropout(0.2), # Dropout (for regularisation)
         layers.Flatten(),
         layers.Dense(128, activation='relu'),
         layers.Dense(classNo)    ])
@@ -78,9 +82,6 @@ def main():
         epochs=epochs
     )
     model.save("outputModel")
-
-
-
 
 if __name__ == "__main__":
     main()
