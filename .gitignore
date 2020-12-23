@@ -6,3 +6,5 @@ dataSet/*
 *.csv
 outputModel
 outputModel2
+outputModel3
+*.xml

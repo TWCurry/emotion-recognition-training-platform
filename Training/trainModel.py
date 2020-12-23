@@ -72,13 +72,17 @@ def main():
         layers.Convolution2D(32, 3, 3, activation='relu'),
         layers.ZeroPadding2D((1,1)),
         layers.Convolution2D(64, 3, 3, activation='relu'),
-        layers.ZeroPadding2D((2,2)),
+        layers.ZeroPadding2D((1,1)),
         layers.Convolution2D(128, 3, 3, activation='relu'),
         layers.ZeroPadding2D((1,1)),
+        layers.Convolution2D(256, 3, 3, activation='relu'),
+        layers.ZeroPadding2D((1,1)),
+        layers.Convolution2D(512, 3, 3, activation='relu'),
+        layers.ZeroPadding2D((1,1)),
         layers.Flatten(),
-        layers.Dense(256, activation='relu'),
+        layers.Dense(1024, activation='relu'),
         layers.Dropout(0.2),
-        layers.Dense(512, activation='relu'),
+        layers.Dense(2048, activation='relu'),
         layers.Dropout(0.2),
         layers.Dense(7, activation='softmax')
     ])
@@ -95,7 +99,7 @@ def main():
     # Add callbacks
     cbLrReducer = ReduceLROnPlateau(monitor='val_loss', factor=0.9, patience=3, verbose=1) # Reduce learning rate if there is no improvement on the value of the loss function
     cbEarlyStopper = EarlyStopping(monitor='val_loss', min_delta=0, patience=8, verbose=1, mode='auto') # Stop training the model if it's overfitting
-    cbCheckpoint = ModelCheckpoint("outputModel2", monitor='val_accuracy', verbose=1, save_best_only=True) # Save model at the end of the epoch (if there's an improvement on the previous epoch's accuracy)
+    cbCheckpoint = ModelCheckpoint("outputModel3", monitor='val_accuracy', verbose=1, save_best_only=True) # Save model at the end of the epoch (if there's an improvement on the previous epoch's accuracy)
 
     # Train model
     epochs=30
@@ -110,7 +114,7 @@ def main():
     scores = model.evaluate(np.array(validationData), np.array(validationLabels), batch_size=batchSize)
     print(f"Loss: {scores[0]}")
     print(f"Accuracy: {int(scores[1])*100}%")
-    model.save("outputModel2")
+    model.save("outputModel3")
     
 
 if __name__ == "__main__":
