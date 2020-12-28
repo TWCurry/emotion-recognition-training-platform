@@ -10,10 +10,12 @@ Resources:
   inferenceFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: s3://fer-application-cloudformation-templates/560efbf9c453528a843c4bc64e530483
+      CodeUri: s3://fer-application-cloudformation-templates/b6120da0362e8ba48750078a83bf9186
       FunctionName: ferInferenceFunction
       Handler: app.lambda_handler
       Runtime: python3.6
+      Policies:
+      - AmazonS3FullAccess
       Events:
         HelloWorld:
           Type: Api

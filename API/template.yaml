@@ -11,13 +11,19 @@ Resources:
   inferenceFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: inferenceFunction/
       FunctionName: ferInferenceFunction
       Handler: app.lambda_handler
+      PackageType: Image
       Runtime: python3.6
+      Policies:
+        - AmazonS3FullAccess
       Events:
         HelloWorld:
           Type: Api
           Properties:
             Path: /uploadImage
             Method: post
+    Metadata:
+      Dockerfile: Dockerfile
+      DockerContext: inferenceFunction/
+      DockerTag: python3.8-v1
