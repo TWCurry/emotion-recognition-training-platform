@@ -1,0 +1,24 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  SAM app template for factial emotion recognition API
+Globals:
+  Function:
+    Timeout: 3
+
+Resources:
+  inferenceFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: ferInferenceFunction
+      Handler: app.lambda_handler
+      Runtime: python3.8
+      CodeUri: inferenceFunction/
+      Policies:
+        - AmazonS3FullAccess
+      Events:
+        HelloWorld:
+          Type: Api
+          Properties:
+            Path: /uploadImage
+            Method: post
