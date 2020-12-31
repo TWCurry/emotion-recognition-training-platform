@@ -244,3 +244,4 @@ $RECYCLE.BIN/
 inferenceFunction/*
 !inferenceFunction/app.py
 !inferenceFunction/requirements.txt
+!inferenceFunction/haarcascade_frontalface_default.xml

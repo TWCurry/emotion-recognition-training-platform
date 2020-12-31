@@ -13,7 +13,7 @@ Resources:
       FunctionName: ferInferenceFunction
       Handler: app.lambda_handler
       Runtime: python3.8
-      CodeUri: s3://fer-application-cloudformation-templates/a6ec512406c6e0e1930e18714d255035
+      CodeUri: s3://fer-application-cloudformation-templates/lambdaCode.zip
       Policies:
       - AmazonS3FullAccess
       Events:

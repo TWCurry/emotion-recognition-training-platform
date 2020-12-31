@@ -1,0 +1,4 @@
+# boto3
+tflite
+opencv-python
+numpy
