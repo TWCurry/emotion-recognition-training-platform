@@ -1,16 +1,21 @@
-import boto3, base64, cv2
+import boto3, base64, cv2, os
+from botocore import model
 import numpy as np
 from urllib.parse import unquote
 
 def lambda_handler(event, context):
     try:
+        modelPath = os.environ["modelPath"]
+        modelBucket = os.environ["modelBucket"]
+    except Exception as e:
+        print("Missing environment variables.")
+        return response(500, "Missing environment variables.")
+    try:
         body = event["body"]
     except Exception as e:
         print("Invalid request body.")
-        return {
-            "statusCode": 400,
-            "body": "Invalid request body."
-        }
+        return response(400, "Invalid request body.")
+
     body = unquote(body) # Url decode body
     body = body.split(",")[1] # Remove b64 header
     body = base64.b64decode(body) # decode base64 to bytes
@@ -26,17 +31,29 @@ def lambda_handler(event, context):
     for (x, y, w, h) in faces:
         cv2.rectangle(img, (x, y), (x+w, y+h), (255, 0, 0), 2)
 
-    # For testing, write as jpeg, then read and upload to s3
-    cv2.imwrite("/tmp/tmp.jpg", img)
-    f = open("/tmp/tmp.jpg", "rb")
-    data = f.read()
-    f.close()
-
+    # Load model from S3
     s3 = boto3.resource('s3')
-    object = s3.Object('tc-emotion-recognition-models', 'test.jpg')
-    object.put(Body=data)
+    s3Object = s3.get_object(Bucket=modelBucket, Key=modelPath)
+    body = s3Object["Body"]
 
+    # For testing, write as jpeg, then read and upload to s3
+    # cv2.imwrite("/tmp/tmp.jpg", img)
+    # f = open("/tmp/tmp.jpg", "rb")
+    # data = f.read()
+    # f.close()
+
+    # object = s3.Object('tc-emotion-recognition-models', 'test.jpg')
+    # object.put(Body=data)
+
+    return response(200, "Request successful")
+
+def response(statusCode, body):
+    # Simple function to generate HTTP response with correct headers (to reduce repeated code)
     return {
-        "statusCode": 200,
-        "body": "Request successful"
+        "statusCode": statusCode,
+        "headers": {
+            "Access-Control-Allow-Origin" : "*",
+            "Access-Control-Allow-Credentials" : True
+        },
+        "body": str(body)
     }
