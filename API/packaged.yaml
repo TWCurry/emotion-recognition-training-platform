@@ -13,12 +13,16 @@ Resources:
       FunctionName: ferInferenceFunction
       Handler: app.lambda_handler
       Runtime: python3.8
-      CodeUri: s3://fer-application-cloudformation-templates/b38149a38947c7c795b5a4fd07d047ab
+      CodeUri: s3://fer-application-cloudformation-templates/dbd3c8300eb6624d4c2f9ddcc144d94c
       Policies:
       - AmazonS3FullAccess
       Layers:
       - arn:aws:lambda:eu-west-2:841435671136:layer:cv2:1
       - arn:aws:lambda:eu-west-2:841435671136:layer:tflite_numpy:1
+      Environment:
+        Variables:
+          modelPath: tfliteModel
+          modelBucket: tc-emotion-recognition-models
       Events:
         HelloWorld:
           Type: Api

@@ -21,8 +21,8 @@ Resources:
         - arn:aws:lambda:eu-west-2:841435671136:layer:tflite_numpy:1
       Environment:
         Variables:
-          - modelPath: tfliteModel
-          - modelBucket: tc-emotion-recognition-models
+          modelPath: tfliteModel
+          modelBucket: tc-emotion-recognition-models
       Events:
         HelloWorld:
           Type: Api
