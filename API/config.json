@@ -1,0 +1,4 @@
+{
+    "modelPath": "tfliteModel",
+    "modelBucket": "tc-emotion-recognition-models"
+}
