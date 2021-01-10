@@ -26,7 +26,7 @@
                 console.log(data)
                 document.getElementById('output').innerHTML = '<img src="' + data + '" width="70px" height="50px" />';
                 params = {"imageData": data};
-                $.post("http://127.0.0.1:5000/uploadImage", params, function(resp) {
+                $.post("http://34.73.32.78:5000/uploadImage", params, function(resp) {
                     console.log(resp);
                 })
             });
