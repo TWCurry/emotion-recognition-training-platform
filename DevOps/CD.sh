@@ -18,3 +18,4 @@ services:
       - \"5000:5000\"
 """ > docker-compose.yml
 sudo docker-compose up -d
+rm docker-compose.yml
