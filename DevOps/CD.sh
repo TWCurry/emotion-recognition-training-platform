@@ -1,5 +1,20 @@
 #!/bin/bash
-cp Dockerfile ../Dockerfile
-cp docker-compose.yml ../docker-compose.yml
+# CD Pipeline to deploy application
+# Take image tag as parameter
+tag=$1
+if [ $# -eq 0 ]
+  then
+    echo "Missing image tag."
+    exit 1
+fi
+
 cd ../
-docker-compose up -d
+
+echo -e """version: \"3.8\"
+services:
+  flask-app:
+    image: localhost:5001/fer-api:${tag}
+    ports:
+      - \"5000:5000\"
+""" > docker-compose.yml
+sudo docker-compose up -d
