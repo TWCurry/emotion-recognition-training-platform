@@ -30,6 +30,7 @@ sudo docker push localhost:5001/fer-api:$tag
 # Remove locally cached images
 sudo docker image remove fer-api:$tag
 sudo docker image remove localhost:5001/fer-api:$tag
+sudo docker image remove python
 
 # Remove git repo
 cd ../
