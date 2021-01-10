@@ -1,3 +1,9 @@
 *.jpg
 __pycache__
 */__pycache__
+dataSet/*
+*.pem
+*.csv
+outputModel
+outputModel2
+outputModel3
