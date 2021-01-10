@@ -4,9 +4,10 @@
 # Take branch name and tag as parameters
 branch=$1
 tag=$2
-if [ $# -ne 2 ]
+modelName=$3
+if [ $# -ne 3 ]
   then
-    echo "Missing branch name or image tag. Usage: bash CI.sh branchName imageTag"
+    echo "Incorrect parameters. Usage: bash CI.sh branchName imageTag modelFileName"
     exit 1
 fi
 
@@ -14,6 +15,9 @@ fi
 git clone git@github.com:TWCurry/emotion-recognition-training-platform.git
 cd emotion-recognition-training-platform
 git checkout $branch
+
+# Fetch model from GCP Storage
+gsutil cp gs://tc-fer-application-models/$modelName API/model.tflite
 
 # Copy Dockerfile from DevOps dir to root of repo
 cp DevOps/Dockerfile Dockerfile
