@@ -2,6 +2,10 @@ var apiUrl = "http://35.190.172.118:5000"
 // Run on page load
 $( document ).ready(function() {
     console.log("DOM Loaded.");
+
+    var canvas = document.getElementById('canvas');
+
+    // Create webcam object
     Webcam.set({
         width: 60,
         height: 45,
@@ -31,13 +35,13 @@ function takeSnapShot() {
     console.log("Sending image...")
     try {
         Webcam.snap(function (data) {
-            document.getElementById('output').innerHTML = '<img src="' + data + '" width="70px" height="50px" />';
             params = {"imageData": data};
             $.post(apiUrl+"/uploadImage", params, function(resp) {
                 console.log(resp);
             })
         });
-      } catch (error) {
+    } catch (error) {
           console.log("Error:"+error);
-      }
+    }
 }
+
