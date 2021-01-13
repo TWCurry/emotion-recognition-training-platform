@@ -3,7 +3,7 @@ var apiUrl = "http://35.190.172.118:5000"
 $( document ).ready(function() {
     console.log("DOM Loaded.");
 
-    var canvas = document.getElementById('canvas');
+    $("#gridContainer").html(createContainerContents());
 
     // Create webcam object
     Webcam.set({
@@ -45,3 +45,14 @@ function takeSnapShot() {
     }
 }
 
+function createContainerContents() {
+    returnHtml = "<table><tr>";
+    for (y=0;y<3;y++) {
+        for (x=0;x<3;x++) {
+            returnHtml += "<td class='imgContainer'></td>";
+        } 
+        returnHtml += "</tr>";
+    }
+    returnHtml += "</table>";
+    return returnHtml;
+}

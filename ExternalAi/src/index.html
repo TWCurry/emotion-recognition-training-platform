@@ -4,7 +4,7 @@
         <!-- Include CSS -->
         <link rel="stylesheet" href="stylesheet.css">
         <!-- Include jQuery -->
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <script src="jquery-3-5-1.min.js"></script>
         <!-- Include webcamJs -->
         <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/webcamjs/1.0.25/webcam.js"></script>
         <!-- Include custom script -->
@@ -13,6 +13,12 @@
     <body>
         <header>Reverse Captcha</header>
         <div id="camera"></div>
-        <div id="container"></div>
+        <div id="contentContainer">
+            <select id="sltDataSet" name="sltDataSet"><option>Loading Datasets...</option></select>
+            <div id="gridContainer"></div><br>
+            <br>Identify all images which contain a<br><br>
+            <select id="sltItems" name="sltItems"><option>Select a dataset to choose items</option></select><br><br>
+            <button id="btnSubmit">Submit</button>
+        </div>
     </body>
 </html>
