@@ -5,6 +5,5 @@ dataSet/*
 *.pem
 *.csv
 outputModel
-outputModel2
-outputModel3
+outputModel*
 *.min.js
