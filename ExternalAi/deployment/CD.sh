@@ -15,7 +15,7 @@ services:
   lego-app:
     image: localhost:5001/lego-api:${tag}
     ports:
-      - \"5000:5000\"
+      - \"5002:5000\"
 """ > docker-compose.yml
 sudo docker-compose up -d
 rm docker-compose.yml

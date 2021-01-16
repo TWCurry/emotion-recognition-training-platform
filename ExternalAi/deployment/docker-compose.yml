@@ -3,4 +3,4 @@ services:
   lego-app:
     image: localhost:5001/lego-api:latest
     ports:
-      - "5000:5000"
+      - "5002:5000"
