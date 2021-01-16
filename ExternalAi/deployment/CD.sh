@@ -12,7 +12,7 @@ cd ../
 
 echo -e """version: \"3.8\"
 services:
-  flask-app:
+  lego-app:
     image: localhost:5001/lego-api:${tag}
     ports:
       - \"5000:5000\"
