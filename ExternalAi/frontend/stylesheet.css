@@ -34,6 +34,8 @@ header {
     border-radius: 5px;
     height: 97px;
     width: 97px;
+    color: black;
+    text-align: center;
 }
 #btnSubmit {
     background-color: black;
