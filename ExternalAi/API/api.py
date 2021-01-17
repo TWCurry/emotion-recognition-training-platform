@@ -17,7 +17,7 @@ def fetchImages():
         blob = bucket.blob(imgNames[index].name)
         data = blob.download_as_bytes()
         b64Data = base64.b64encode(data)
-        returnData[i] = (str(b64Data))
+        returnData[i] = {imgNames[index].name:(str(b64Data))}
 
     response = flask.jsonify({
         "statusCode": 200,
