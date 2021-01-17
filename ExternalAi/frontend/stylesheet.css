@@ -1,0 +1,55 @@
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: black;
+    color: white;
+}
+header {
+    font-size: xx-large;
+    text-align: center;
+}
+#camera {
+    border: 2px solid white;
+    border-radius: 5px;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    height: 60px;
+    width: 45px;
+}
+#contentContainer {
+    text-align: center;
+}
+#gridContainer {
+    position: relative;
+    top: 30px;
+    height: 300px;
+    width: 300px;
+    background-color: white;
+    margin: auto;
+    border: 2px solid rgb(221, 221, 221);
+    border-radius: 5px;
+}
+.imgContainer {
+    border: 3px solid black;
+    border-radius: 5px;
+    height: 97px;
+    width: 97px;
+    color: black;
+    text-align: center;
+}
+#btnSubmit {
+    background-color: black;
+    border-radius: 5px;
+    border: 2px solid white;
+    color: white;
+}
+select {
+    background-color: black;
+    border-radius: 5px;
+    border: 2px solid white;
+    color: white;
+}
+.legoImage {
+    height: 90px;
+    width: 90px;
+}

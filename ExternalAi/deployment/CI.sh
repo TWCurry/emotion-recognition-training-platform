@@ -17,23 +17,23 @@ cd emotion-recognition-training-platform
 git checkout $branch
 
 # Fetch model from GCP Storage
-gsutil cp gs://tc-fer-application-models/$modelName API/model.tflite
+# gsutil cp gs://tc-fer-application-models/$modelName API/model.tflite
 
 # Copy Dockerfile from DevOps dir to root of repo
-cp DevOps/Dockerfile Dockerfile
+cp ExternalAi/deployment/Dockerfile Dockerfile
 
 # Build image
-sudo docker build -t fer-api:$tag .
+sudo docker build -t lego-api:$tag .
 
 # Tag image
-sudo docker tag fer-api:$tag localhost:5001/fer-api:$tag
+sudo docker tag lego-api:$tag localhost:5001/lego-api:$tag
 
 # Push image to registry
-sudo docker push localhost:5001/fer-api:$tag
+sudo docker push localhost:5001/lego-api:$tag
 
 # Remove locally cached images
-sudo docker image remove fer-api:$tag
-sudo docker image remove localhost:5001/fer-api:$tag
+sudo docker image remove lego-api:$tag
+sudo docker image remove localhost:5001/lego-api:$tag
 sudo docker image remove python
 
 # Remove git repo
