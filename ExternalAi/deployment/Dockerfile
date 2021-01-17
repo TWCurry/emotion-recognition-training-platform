@@ -1,5 +1,5 @@
 # Base Image
-FROM python:3.7.9-slim-buster
+FROM python:3.7.9-alpine
 
 # Set the working directory in the container
 WORKDIR /code
