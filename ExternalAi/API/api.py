@@ -19,6 +19,7 @@ def fetchImages():
         b64Data = base64.b64encode(data)
         returnData.append(b64Data)
     return createResponse(200, returnData)
+
 def createResponse(statusCode, body):
     # Simple function to generate HTTP response with correct headers (to reduce repeated code)
     response = flask.jsonify({
@@ -27,5 +28,6 @@ def createResponse(statusCode, body):
     })
     response.headers.add("Access-Control-Allow-Origin", "*")
     return response
+
 if __name__ == "__main__":
     app.run()
