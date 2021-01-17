@@ -9,7 +9,7 @@ COPY ExternalAi/API/ .
 
 # Update apt packages and instance dependencies for python packages
 RUN apk update
-RUN apk add --update libgl1-mesa-glx libglib2.0-0
+RUN apk add libgl1-mesa-glx libglib2.0-0
 
 # Install dependencies
 RUN pip install -r requirements.txt
