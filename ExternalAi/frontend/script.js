@@ -79,3 +79,7 @@ function downloadNewImages() {
         $("#gridContainer").html(returnHtml);
     });
 }
+
+function submit() {
+    console.log("submit")
+}
