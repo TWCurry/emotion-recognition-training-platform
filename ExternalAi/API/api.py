@@ -17,7 +17,7 @@ def fetchImages():
         blob = bucket.blob(imgNames[index].name)
         data = blob.download_as_bytes()
         b64Data = base64.b64encode(data)
-        returnData.append(b64Data)
+        returnData.append(str(b64Data))
     return createResponse(200, returnData)
 
 def createResponse(statusCode, body):
