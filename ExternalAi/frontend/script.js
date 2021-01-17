@@ -58,6 +58,8 @@ function createContainerContents() {
 
 function downloadImages() {
     $.get(apiUrl+":5002/fetchImages", function(resp) {
-        console.log(resp);
+        console.log(resp)
+        // imageData = JSON.parse(resp.body);
+        // console.log(imageData);
     })
 }

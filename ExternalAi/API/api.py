@@ -22,10 +22,10 @@ def fetchImages():
 
 def createResponse(statusCode, body):
     # Simple function to generate HTTP response with correct headers (to reduce repeated code)
-    response = flask.jsonify({
+    response = {
         "statusCode": statusCode,
         "body": str(body)
-    })
+    }
     response.headers.add("Access-Control-Allow-Origin", "*")
     return response
 
