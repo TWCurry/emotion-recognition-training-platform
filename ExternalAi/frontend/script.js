@@ -2,8 +2,8 @@ var apiUrl = "http://35.190.172.118"
 // Run on page load
 $( document ).ready(function() {
     console.log("DOM Loaded.");
-    $("#gridContainer").html(createContainerContents());
-    downloadImages();
+    $("#gridContainer").html(createPlaceholderContainerContents());
+    downloadNewImages();
     // Create webcam object
     Webcam.set({
         width: 60,
@@ -37,14 +37,14 @@ function takeSnapShot() {
             params = {"imageData": data};
             $.post(apiUrl+":5000/uploadImage", params, function(resp) {
                 console.log(resp);
-            })
+            });
         });
     } catch (error) {
           console.log("Error:"+error);
     }
 }
 
-function createContainerContents() {
+function createPlaceholderContainerContents() {
     returnHtml = "<table><tr>";
     for (y=0;y<3;y++) {
         for (x=0;x<3;x++) {
@@ -56,10 +56,26 @@ function createContainerContents() {
     return returnHtml;
 }
 
-function downloadImages() {
+function downloadNewImages() {
+    returnHtml = "<table><tr>";
     $.get(apiUrl+":5002/fetchImages", function(resp) {
-        console.log(resp)
-        // imageData = JSON.parse(resp.body);
-        // console.log(imageData);
-    })
+        downloadedData = resp.body;
+        imageData = [];
+        Object.keys(downloadedData).forEach(function(key) {
+            imgObj = downloadedData[key];
+            rawData = imgObj.substring(2, imgObj.length - 1);
+            imageData.push(rawData);
+            // $("#test").html("<img src=\"data:image/png;base64, "+rawData+"\">");
+        });
+        index = 0;
+        for (y=0;y<3;y++) {
+            for (x=0;x<3;x++) {
+                returnHtml += "<td class='imgContainer'><img class='legoImage' src=\"data:image/png;base64, "+imageData[index]+"\"></td>";
+                index += 1
+            } 
+            returnHtml += "</tr>";
+        }
+        returnHtml += "</table>";
+        $("#gridContainer").html(returnHtml);
+    });
 }
