@@ -7,3 +7,4 @@ dataSet/*
 outputModel
 outputModel*
 *.min.js
+*.tflite
