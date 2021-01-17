@@ -8,8 +8,8 @@ WORKDIR /code
 COPY ExternalAi/API/ .
 
 # Update apt packages and instance dependencies for python packages
-RUN apt-get update -y
-RUN apt-get install libgl1-mesa-glx libglib2.0-0 -y
+RUN apk update -y
+RUN apk add --update libgl1-mesa-glx libglib2.0-0 -y
 
 # Install dependencies
 RUN pip install -r requirements.txt
