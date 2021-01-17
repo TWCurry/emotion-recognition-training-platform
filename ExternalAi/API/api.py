@@ -8,7 +8,7 @@ def fetchImages():
     client = storage.Client()
     bucketName = "tc-fer-application-datasets"
     imgNames = []
-    returnData = []
+    returnData = {}
     bucket = client.bucket(bucketName)
     for blob in client.list_blobs(bucketName, prefix="legoDataset"):
         imgNames.append(blob)
@@ -17,15 +17,12 @@ def fetchImages():
         blob = bucket.blob(imgNames[index].name)
         data = blob.download_as_bytes()
         b64Data = base64.b64encode(data)
-        returnData.append(str(b64Data))
-    return createResponse(200, returnData)
+        returnData[i] = (str(b64Data))
 
-def createResponse(statusCode, body):
-    # Simple function to generate HTTP response with correct headers (to reduce repeated code)
-    response = {
-        "statusCode": statusCode,
-        "body": str(body)
-    }
+    response = flask.jsonify({
+        "statusCode": 200,
+        "body": returnData
+    })
     response.headers.add("Access-Control-Allow-Origin", "*")
     return response
 
