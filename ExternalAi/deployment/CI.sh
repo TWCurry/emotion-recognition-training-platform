@@ -17,7 +17,7 @@ cd emotion-recognition-training-platform
 git checkout $branch
 
 # Fetch model from GCP Storage
-# gsutil cp gs://tc-fer-application-models/$modelName API/model.tflite
+gsutil cp gs://tc-fer-application-models/$modelName API/model.tflite
 
 # Copy Dockerfile from DevOps dir to root of repo
 cp ExternalAi/deployment/Dockerfile Dockerfile
