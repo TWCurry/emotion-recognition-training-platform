@@ -59,13 +59,17 @@ function createPlaceholderContainerContents() {
 function downloadNewImages() {
     returnHtml = "<table><tr>";
     $.get(apiUrl+":5002/fetchImages", function(resp) {
+        console.log(resp)
         downloadedData = resp.body;
         imageData = [];
+        imageNames = [];
         Object.keys(downloadedData).forEach(function(key) {
-            imgObj = downloadedData[key];
-            rawData = imgObj.substring(2, imgObj.length - 1);
-            imageData.push(rawData);
-            // $("#test").html("<img src=\"data:image/png;base64, "+rawData+"\">");
+            Object.keys(downloadedData[key]).forEach(function(imgName) {
+                imageNames.push(imgName);
+                imgObj = downloadedData[key][imgName];
+                rawData = imgObj.substring(2, imgObj.length - 1);
+                imageData.push(rawData);
+            });
         });
         index = 0;
         for (y=0;y<3;y++) {
@@ -81,5 +85,5 @@ function downloadNewImages() {
 }
 
 function submit() {
-    console.log("submit")
+    console.log($("#sltItems").val())
 }
