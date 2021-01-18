@@ -1,15 +1,22 @@
-import flask, random, base64
+import flask, random, base64, cv2
 from flask import Flask
+from flask import Flask, request
 from google.cloud import storage
+from urllib.parse import unquote
+import numpy as np
+import tflite_runtime.interpreter as tflite
+
 # Initialisation
+classNames = ['11214', '18651', '2357', '3003', '3004', '3005', '3022', '3023', '3024', '3040', '3069', '32123', '3673', '3713', '3794', '6632']
 app = Flask(__name__)
+client = storage.Client()
+bucketName = "tc-fer-application-datasets"
+bucket = client.bucket(bucketName)
+
 @app.route("/fetchImages", methods=["GET"])
 def fetchImages():
-    client = storage.Client()
-    bucketName = "tc-fer-application-datasets"
     imgNames = []
     returnData = {}
-    bucket = client.bucket(bucketName)
     for blob in client.list_blobs(bucketName, prefix="legoDataset"):
         imgNames.append(blob)
     for i in range(9):
@@ -25,6 +32,54 @@ def fetchImages():
     })
     response.headers.add("Access-Control-Allow-Origin", "*")
     return response
+
+@app.route("/identifyBrickType", methods=["GET"])
+def identifyBrickType():
+    imageNames = str(request.form.getlist('imageData')[0])
+    typeToIdentify = str(request.form.getlist('typeToIdentify')[0])
+    print(imageNames)
+    indicesContainingImage = []
+    for i in range(imageNames-1):
+        blob = bucket.blob(imageNames[i])
+        data = blob.download_as_bytes()
+        npArr = np.frombuffer(data, np.uint8) # Load image into numpy array
+        imgArr = np.zeros((200, 200)) # Empty array, will store the image data
+
+        # Load Haar-Cascade
+        print("Loading Haar-Cascade...")
+        faceCascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+
+        # Detect the faces in the image
+        print("Detecting faces in image...")
+        faces = faceCascade.detectMultiScale(npArr, 1.1, 4)
+        if(len(faces)) == 0:
+            response = flask.jsonify({
+                "statusCode": 200,
+                "body": "No faces found."
+            })
+            response.headers.add("Access-Control-Allow-Origin", "*")
+            return response
+        
+        # Load model
+        print("Loading model...")
+        interpreter = tflite.Interpreter(model_path="model.tflite")
+        interpreter.allocate_tensors()
+
+        # Load input data to model
+        inputDetails = interpreter.get_input_details()
+        outputDetails = interpreter.get_output_details()
+        inputData = np.expand_dims(imgArr, axis=3)
+        interpreter.set_tensor(inputDetails[0]['index'], inputData)
+        print("Successfully loaded model, running...")
+
+        # Run model
+        interpreter.invoke()
+        predictions = interpreter.get_tensor(outputDetails[0]['index'])
+        classType = classNames[np.argmax(predictions[0])]
+
+        # If current image contains chosen brick type:
+        if classType == typeToIdentify:
+            indicesContainingImage.append(i)
 
 if __name__ == "__main__":
     app.run()
