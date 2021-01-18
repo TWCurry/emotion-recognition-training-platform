@@ -1,4 +1,5 @@
 var apiUrl = "http://35.190.172.118"
+var imageNames = [];
 // Run on page load
 $( document ).ready(function() {
     console.log("DOM Loaded.");
@@ -59,10 +60,8 @@ function createPlaceholderContainerContents() {
 function downloadNewImages() {
     returnHtml = "<table><tr>";
     $.get(apiUrl+":5002/fetchImages", function(resp) {
-        console.log(resp)
         downloadedData = resp.body;
         imageData = [];
-        imageNames = [];
         Object.keys(downloadedData).forEach(function(key) {
             Object.keys(downloadedData[key]).forEach(function(imgName) {
                 imageNames.push(imgName);
@@ -85,5 +84,6 @@ function downloadNewImages() {
 }
 
 function submit() {
+    console.log(imageNames)
     console.log($("#sltItems").val())
 }
