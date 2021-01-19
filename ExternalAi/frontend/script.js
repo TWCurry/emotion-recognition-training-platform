@@ -84,6 +84,8 @@ function downloadNewImages() {
 }
 
 function submit() {
-    console.log(imageNames)
-    console.log($("#sltItems").val())
+    params = {"imageNames": imageNames, "typeToIdentify": $("#sltItems").val()};
+    $.post(apiUrl+":5002/identifyBrickType", params, function(resp) {
+        console.log(resp);
+    });
 }
