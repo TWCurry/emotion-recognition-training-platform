@@ -33,7 +33,7 @@ def fetchImages():
     response.headers.add("Access-Control-Allow-Origin", "*")
     return response
 
-@app.route("/identifyBrickType", methods=["GET"])
+@app.route("/identifyBrickType", methods=["POST"])
 def identifyBrickType():
     imageNames = str(request.form.getlist('imageNames')[0])
     typeToIdentify = str(request.form.getlist('typeToIdentify')[0])
