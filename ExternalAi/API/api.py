@@ -1,4 +1,4 @@
-import flask, random, base64, cv2
+import flask, random, base64, cv2, sys
 from flask import Flask
 from flask import Flask, request
 from google.cloud import storage
@@ -18,14 +18,14 @@ bucket = client.bucket(bucketName)
 def fetchImages():
     imgNames = []
     returnData = {}
-    for blob in client.list_blobs(bucketName, prefix=folderPrefix):
+    for blob in client.list_blobs(bucketName, prefix="legoDataset"):
         imgNames.append(blob)
     for i in range(9):
         index = random.randint(0, len(imgNames)-1)
         blob = bucket.blob(imgNames[index].name)
         data = blob.download_as_bytes()
         b64Data = base64.b64encode(data)
-        returnData[i] = {imgNames[index].name[len(folderPrefix)+1:]:(str(b64Data))}
+        returnData[i] = {imgNames[index].name:(str(b64Data))}
 
     response = flask.jsonify({
         "statusCode": 200,
@@ -39,6 +39,7 @@ def identifyBrickType():
     imageNames = str(request.args.get('imageNames'))
     typeToIdentify = str(request.args.get('typeToIdentify'))
     print(imageNames)
+    sys.exit()
     indicesContainingImage = []
     for i in range(len(imageNames)-1):
         blob = bucket.blob(imageNames[i])
