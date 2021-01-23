@@ -35,8 +35,8 @@ def fetchImages():
 
 @app.route("/identifyBrickType", methods=["POST"])
 def identifyBrickType():
-    imageNames = str(request.form.getlist('imageNames')[0])
-    typeToIdentify = str(request.form.getlist('typeToIdentify')[0])
+    imageNames = str(request.args.get('imageNames'))
+    typeToIdentify = str(request.args.get('typeToIdentify'))
     print(imageNames)
     indicesContainingImage = []
     for i in range(imageNames-1):
