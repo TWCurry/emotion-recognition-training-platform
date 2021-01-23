@@ -1,5 +1,5 @@
 # Base Image
-FROM python:3.7.9-alpine
+FROM python:3.7.9-slim-buster
 
 # Set the working directory in the container
 WORKDIR /code
@@ -7,14 +7,9 @@ WORKDIR /code
 # Copy source code
 COPY ExternalAi/API/ .
 
-# # Update apt packages and instance dependencies for python packages
-# RUN apt update -y
-# RUN apt install libgl1-mesa-glx libglib2.0-0 -y
-RUN apk add --update curl which bash
-
-RUN curl -sSL https://sdk.cloud.google.com | bash
-
-ENV PATH $PATH:/root/google-cloud-sdk/bin
+# Update apt packages and instance dependencies for python packages
+RUN apt update -y
+RUN apt install libgl1-mesa-glx libglib2.0-0 -y
 
 # Install dependencies
 RUN pip install -r requirements.txt
