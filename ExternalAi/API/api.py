@@ -11,20 +11,21 @@ classNames = ['11214', '18651', '2357', '3003', '3004', '3005', '3022', '3023', 
 app = Flask(__name__)
 client = storage.Client()
 bucketName = "tc-fer-application-datasets"
+folderPrefix="legoDataset"
 bucket = client.bucket(bucketName)
 
 @app.route("/fetchImages", methods=["GET"])
 def fetchImages():
     imgNames = []
     returnData = {}
-    for blob in client.list_blobs(bucketName, prefix="legoDataset"):
+    for blob in client.list_blobs(bucketName, prefix=folderPrefix):
         imgNames.append(blob)
     for i in range(9):
         index = random.randint(0, len(imgNames)-1)
         blob = bucket.blob(imgNames[index].name)
         data = blob.download_as_bytes()
         b64Data = base64.b64encode(data)
-        returnData[i] = {imgNames[index].name:(str(b64Data))}
+        returnData[i] = {imgNames[index].name[len(folderPrefix)+1:]:(str(b64Data))}
 
     response = flask.jsonify({
         "statusCode": 200,
