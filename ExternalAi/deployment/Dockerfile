@@ -10,7 +10,7 @@ COPY ExternalAi/API/ .
 # # Update apt packages and instance dependencies for python packages
 # RUN apt update -y
 # RUN apt install libgl1-mesa-glx libglib2.0-0 -y
-RUN apk add --update python curl which bash
+RUN apk add --update curl which bash
 
 RUN curl -sSL https://sdk.cloud.google.com | bash
 
