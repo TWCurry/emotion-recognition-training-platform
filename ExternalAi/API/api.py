@@ -39,7 +39,7 @@ def identifyBrickType():
     typeToIdentify = str(request.args.get('typeToIdentify'))
     print(imageNames)
     indicesContainingImage = []
-    for i in range(imageNames-1):
+    for i in range(len(imageNames)-1):
         blob = bucket.blob(imageNames[i])
         data = blob.download_as_bytes()
         npArr = np.frombuffer(data, np.uint8) # Load image into numpy array
