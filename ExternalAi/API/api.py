@@ -38,13 +38,6 @@ def fetchImages():
 def identifyBrickType():
     imageNames = str(request.args.get('imageNames'))
     typeToIdentify = str(request.args.get('typeToIdentify'))
-    print(imageNames)
-    response = flask.jsonify({
-        "statusCode": 200,
-        "body": str(imageNames)
-    })
-    response.headers.add("Access-Control-Allow-Origin", "*")
-    return response
     indicesContainingImage = []
     for i in range(len(imageNames)-1):
         blob = bucket.blob(imageNames[i])
