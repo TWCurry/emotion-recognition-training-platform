@@ -1,4 +1,5 @@
-var apiUrl = "http://35.190.172.118"
+// var apiUrl = "http://35.190.172.118"
+var apiUrl = "http://localhost"
 var imageNames = [];
 // Run on page load
 $( document ).ready(function() {
@@ -59,7 +60,7 @@ function createPlaceholderContainerContents() {
 
 function downloadNewImages() {
     returnHtml = "<table><tr>";
-    $.get(apiUrl+":5002/fetchImages", function(resp) {
+    $.get(apiUrl+":5000/fetchImages", function(resp) {
         downloadedData = resp.body;
         imageData = [];
         Object.keys(downloadedData).forEach(function(key) {
@@ -73,7 +74,7 @@ function downloadNewImages() {
         index = 0;
         for (y=0;y<3;y++) {
             for (x=0;x<3;x++) {
-                returnHtml += "<td class='imgContainer'><img class='legoImage' src=\"data:image/png;base64, "+imageData[index]+"\"></td>";
+                returnHtml += "<td class='imgContainer' id='container"+index+"'><img class='legoImage' src=\"data:image/png;base64, "+imageData[index]+"\"></td>";
                 index += 1
             } 
             returnHtml += "</tr>";
@@ -84,8 +85,14 @@ function downloadNewImages() {
 }
 
 function submit() {
-    params = {"imageNames": imageNames, "typeToIdentify": $("#sltItems").val()};
-    $.post(apiUrl+":5002/identifyBrickType", params, function(resp) {
-        console.log(resp);
+    // Reset borders
+    for (i=0;i<9;i++) {
+        $("#container"+i).css("border", "5px solid black");
+    }
+    params = {"imageNames": JSON.stringify(imageNames), "typeToIdentify": $("#sltItems").val()};
+    $.post(apiUrl+":5000/identifyBrickType", params, function(resp) {
+        resp.body.forEach(function(index) {
+            $("#container"+index).css("border", "5px solid rgb(51, 255, 0)");
+        });
     });
 }

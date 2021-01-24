@@ -70,11 +70,14 @@ def identifyBrickType():
             indicesContainingImage.append(i)
 
     for file in fileNames:
-        os.remove(file)
+        try:
+            os.remove(file)
+        except:
+            print(f"Warning - could not delete file {file}.")
 
     response = flask.jsonify({
             "statusCode": 200,
-            "body": str(indicesContainingImage)
+            "body": indicesContainingImage
         })
     response.headers.add("Access-Control-Allow-Origin", "*")
     return response
