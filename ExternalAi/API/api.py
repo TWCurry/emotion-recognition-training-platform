@@ -1,4 +1,4 @@
-import flask, random, base64, cv2, sys
+import flask, random, base64, cv2, sys, google, json
 from flask import Flask
 from flask import Flask, request
 from google.cloud import storage
@@ -9,7 +9,11 @@ import tflite_runtime.interpreter as tflite
 # Initialisation
 classNames = ['11214', '18651', '2357', '3003', '3004', '3005', '3022', '3023', '3024', '3040', '3069', '32123', '3673', '3713', '3794', '6632']
 app = Flask(__name__)
-client = storage.Client()
+try:
+    client = storage.Client()
+except google.auth.exceptions.DefaultCredentialsError as e:
+    print(e)
+    sys.exit()
 bucketName = "tc-fer-application-datasets"
 folderPrefix="legoDataset"
 bucket = client.bucket(bucketName)
@@ -36,10 +40,11 @@ def fetchImages():
 
 @app.route("/identifyBrickType", methods=["POST"])
 def identifyBrickType():
-    imageNames = str(request.args.get('imageNames'))
-    typeToIdentify = str(request.args.get('typeToIdentify'))
+    imageNames = json.loads(request.form.getlist('imageNames')[0])
+    typeToIdentify = str(request.form.getlist('typeToIdentify')[0])
     indicesContainingImage = []
     for i in range(len(imageNames)-1):
+        print(imageNames[i])
         blob = bucket.blob(imageNames[i])
         data = blob.download_as_bytes()
         npArr = np.frombuffer(data, np.uint8) # Load image into numpy array
