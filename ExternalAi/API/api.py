@@ -1,11 +1,9 @@
-import flask, random, base64, cv2, sys, google, json
-from flask import Flask
+import flask, random, base64, cv2, sys, google, json, os
 from flask import Flask, request
 from google.cloud import storage
-from urllib.parse import unquote
 import numpy as np
-import tflite_runtime.interpreter as tflite
-
+import tensorflow as tf
+from tensorflow import keras
 # Initialisation
 classNames = ['11214', '18651', '2357', '3003', '3004', '3005', '3022', '3023', '3024', '3040', '3069', '32123', '3673', '3713', '3794', '6632']
 app = Flask(__name__)
@@ -40,51 +38,46 @@ def fetchImages():
 
 @app.route("/identifyBrickType", methods=["POST"])
 def identifyBrickType():
+    # Load model
+    print("Loading model...")
+    model = keras.models.load_model("outputModel4")
+    probabilityModel = tf.keras.Sequential([model,tf.keras.layers.Softmax()]) # Create model to convert logits to probabilities
+
     imageNames = json.loads(request.form.getlist('imageNames')[0])
     typeToIdentify = str(request.form.getlist('typeToIdentify')[0])
     indicesContainingImage = []
+    fileNames = []
+
     for i in range(len(imageNames)-1):
+        npArr = np.zeros((200,200))
         print(imageNames[i])
         blob = bucket.blob(imageNames[i])
-        data = blob.download_as_bytes()
-        npArr = np.frombuffer(data, np.uint8) # Load image into numpy array
-        imgArr = np.zeros((200, 200)) # Empty array, will store the image data
+        fileName = imageNames[i].split("/")[-1]
+        fileNames.append(fileName)
+        blob.download_to_filename(fileName)
 
-        # Load Haar-Cascade
-        print("Loading Haar-Cascade...")
-        faceCascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+        img = keras.preprocessing.image.load_img(fileName)
+        imgArr = keras.preprocessing.image.img_to_array(img)
+        imgArr = np.array([imgArr])
 
-        # Detect the faces in the image
-        print("Detecting faces in image...")
-        faces = faceCascade.detectMultiScale(npArr, 1.1, 4)
-        if(len(faces)) == 0:
-            response = flask.jsonify({
-                "statusCode": 200,
-                "body": "No faces found."
-            })
-            response.headers.add("Access-Control-Allow-Origin", "*")
-            return response
-        
-        # Load model
-        print("Loading model...")
-        interpreter = tflite.Interpreter(model_path="model.tflite")
-        interpreter.allocate_tensors()
-
-        # Load input data to model
-        inputDetails = interpreter.get_input_details()
-        outputDetails = interpreter.get_output_details()
-        inputData = np.expand_dims(imgArr, axis=3)
-        interpreter.set_tensor(inputDetails[0]['index'], inputData)
-        print("Successfully loaded model, running...")
-
-        # Run model
-        interpreter.invoke()
-        predictions = interpreter.get_tensor(outputDetails[0]['index'])
+        predictions = probabilityModel.predict(imgArr)
         classType = classNames[np.argmax(predictions[0])]
+        # print(predictions)
+        print(classType)
 
         # If current image contains chosen brick type:
         if classType == typeToIdentify:
             indicesContainingImage.append(i)
+
+    for file in fileNames:
+        os.remove(file)
+
+    response = flask.jsonify({
+            "statusCode": 200,
+            "body": str(indicesContainingImage)
+        })
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response
 
 if __name__ == "__main__":
     app.run()
