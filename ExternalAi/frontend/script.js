@@ -48,11 +48,8 @@ function takeSnapShot() {
 
 function createPlaceholderContainerContents() {
     returnHtml = "<table><tr>";
-    for (y=0;y<3;y++) {
-        for (x=0;x<3;x++) {
-            returnHtml += "<td class='imgContainer'>Loading...</td>";
-        } 
-        returnHtml += "</tr>";
+    for (i=0;i<2;i++) {
+        returnHtml += "<td class='imgContainer'>Loading...</td>";
     }
     returnHtml += "</table>";
     return returnHtml;
@@ -72,12 +69,9 @@ function downloadNewImages() {
             });
         });
         index = 0;
-        for (y=0;y<3;y++) {
-            for (x=0;x<3;x++) {
-                returnHtml += "<td class='imgContainer' id='container"+index+"'><img class='legoImage' src=\"data:image/png;base64, "+imageData[index]+"\"></td>";
-                index += 1
-            } 
-            returnHtml += "</tr>";
+        for (i=0;i<2;i++) {
+            returnHtml += "<td class='imgContainer' id='container"+index+"'><img class='legoImage' src=\"data:image/png;base64, "+imageData[index]+"\"></td>";
+            index += 1
         }
         returnHtml += "</table>";
         $("#gridContainer").html(returnHtml);

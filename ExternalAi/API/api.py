@@ -22,7 +22,7 @@ def fetchImages():
     returnData = {}
     for blob in client.list_blobs(bucketName, prefix="legoDataset"):
         imgNames.append(blob)
-    for i in range(9):
+    for i in range(2):
         index = random.randint(0, len(imgNames)-1)
         blob = bucket.blob(imgNames[index].name)
         data = blob.download_as_bytes()
