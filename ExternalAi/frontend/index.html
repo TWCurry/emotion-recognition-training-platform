@@ -11,11 +11,11 @@
         <script src="script.js"></script>
     </head>
     <body>
-        <header>ML Lego Brick Identification</header>
-        <br>
-        Part of a research project by Thomas Curry
         <div id="camera"></div>
         <div id="contentContainer">
+            <header>ML Lego Brick Identification</header>
+            <br>
+            Part of a research project by Thomas Curry
             <div id="gridContainer"></div><br>
             <br>Identify the image that contains a<br><br>
             <select id="sltItems" name="sltItems">
@@ -37,6 +37,8 @@
                 <option value="6632">Technic Lever 3M</option>
             </select><br><br>
             <button id="btnSubmit" onclick="submit()">Submit</button>
+            <br><br>
+            <img id="loader" src="img/loader.gif" height="240px" width="320px">
         </div>
         <div id="test"></div>
     </body>

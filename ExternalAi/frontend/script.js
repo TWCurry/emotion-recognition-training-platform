@@ -3,6 +3,7 @@ var apiUrl = "http://localhost"
 var imageNames = [];
 // Run on page load
 $( document ).ready(function() {
+    $("#loader").hide();
     console.log("DOM Loaded.");
     $("#gridContainer").html(createPlaceholderContainerContents());
     downloadNewImages();
@@ -49,7 +50,7 @@ function takeSnapShot() {
 function createPlaceholderContainerContents() {
     returnHtml = "<table><tr>";
     for (i=0;i<2;i++) {
-        returnHtml += "<td class='imgContainer'>Loading...</td>";
+        returnHtml += "<td class='imgContainer'><img id='loader' src='img/spinner.gif' height='180px' width='180px'></td>";
     }
     returnHtml += "</table>";
     return returnHtml;
@@ -79,14 +80,16 @@ function downloadNewImages() {
 }
 
 function submit() {
+    $("#loader").fadeIn();
     // Reset borders
     for (i=0;i<9;i++) {
-        $("#container"+i).css("border", "5px solid black");
+        $("#container"+i).css("border", "5px solid transparent");
     }
     params = {"imageNames": JSON.stringify(imageNames), "typeToIdentify": $("#sltItems").val()};
     $.post(apiUrl+":5000/identifyBrickType", params, function(resp) {
         resp.body.forEach(function(index) {
             $("#container"+index).css("border", "5px solid rgb(51, 255, 0)");
         });
+        $("#loader").fadeOut();
     });
 }

@@ -19,33 +19,41 @@ header {
 }
 #contentContainer {
     text-align: center;
+    background-color: #191f26;
+    width: 60%;
+    height: 70%;
+    margin: auto;
+    top: 5%;
+    position: relative;
+    border: 1px solid #191f26;
+    border-radius: 5px;
 }
 #gridContainer {
     position: relative;
     top: 30px;
     height: 200px;
     width: 400px;
-    background-color: white;
+    background-color: #e5eff1;
     margin: auto;
     border: 2px solid rgb(221, 221, 221);
     border-radius: 5px;
 }
 .imgContainer {
-    border: 5px solid rgb(0, 0, 0);
+    border: 5px solid transparent;
     border-radius: 5px;
     height: 197px;
     width: 197px;
-    color: black;
+    color: #191f26;
     text-align: center;
 }
 #btnSubmit {
-    background-color: black;
+    background-color: #191f26;
     border-radius: 5px;
     border: 2px solid white;
     color: white;
 }
 select {
-    background-color: black;
+    background-color: #191f26;
     border-radius: 5px;
     border: 2px solid white;
     color: white;
