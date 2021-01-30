@@ -1,6 +1,9 @@
-var apiUrl = "http://35.190.172.118"
+// var apiUrl = "http://35.190.172.118"
+var apiUrl = "http://localhost"
+var imageNames = [];
 // Run on page load
 $( document ).ready(function() {
+    $("#loader").hide();
     console.log("DOM Loaded.");
     $("#gridContainer").html(createPlaceholderContainerContents());
     downloadNewImages();
@@ -46,11 +49,8 @@ function takeSnapShot() {
 
 function createPlaceholderContainerContents() {
     returnHtml = "<table><tr>";
-    for (y=0;y<3;y++) {
-        for (x=0;x<3;x++) {
-            returnHtml += "<td class='imgContainer'>Loading...</td>";
-        } 
-        returnHtml += "</tr>";
+    for (i=0;i<2;i++) {
+        returnHtml += "<td class='imgContainer'><img id='loader' src='img/spinner.gif' height='180px' width='180px'></td>";
     }
     returnHtml += "</table>";
     return returnHtml;
@@ -58,24 +58,38 @@ function createPlaceholderContainerContents() {
 
 function downloadNewImages() {
     returnHtml = "<table><tr>";
-    $.get(apiUrl+":5002/fetchImages", function(resp) {
+    $.get(apiUrl+":5000/fetchImages", function(resp) {
         downloadedData = resp.body;
         imageData = [];
         Object.keys(downloadedData).forEach(function(key) {
-            imgObj = downloadedData[key];
-            rawData = imgObj.substring(2, imgObj.length - 1);
-            imageData.push(rawData);
-            // $("#test").html("<img src=\"data:image/png;base64, "+rawData+"\">");
+            Object.keys(downloadedData[key]).forEach(function(imgName) {
+                imageNames.push(imgName);
+                imgObj = downloadedData[key][imgName];
+                rawData = imgObj.substring(2, imgObj.length - 1);
+                imageData.push(rawData);
+            });
         });
         index = 0;
-        for (y=0;y<3;y++) {
-            for (x=0;x<3;x++) {
-                returnHtml += "<td class='imgContainer'><img class='legoImage' src=\"data:image/png;base64, "+imageData[index]+"\"></td>";
-                index += 1
-            } 
-            returnHtml += "</tr>";
+        for (i=0;i<2;i++) {
+            returnHtml += "<td class='imgContainer' id='container"+index+"'><img class='legoImage' src=\"data:image/png;base64, "+imageData[index]+"\"></td>";
+            index += 1
         }
         returnHtml += "</table>";
         $("#gridContainer").html(returnHtml);
+    });
+}
+
+function submit() {
+    $("#loader").fadeIn();
+    // Reset borders
+    for (i=0;i<9;i++) {
+        $("#container"+i).css("border", "5px solid transparent");
+    }
+    params = {"imageNames": JSON.stringify(imageNames), "typeToIdentify": $("#sltItems").val()};
+    $.post(apiUrl+":5000/identifyBrickType", params, function(resp) {
+        resp.body.forEach(function(index) {
+            $("#container"+index).css("border", "5px solid rgb(51, 255, 0)");
+        });
+        $("#loader").fadeOut();
     });
 }
