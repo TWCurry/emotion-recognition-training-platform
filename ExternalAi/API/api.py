@@ -48,7 +48,7 @@ def identifyBrickType():
     indicesContainingImage = []
     fileNames = []
 
-    for i in range(len(imageNames)-1):
+    for i in range(len(imageNames)):
         npArr = np.zeros((200,200))
         print(imageNames[i])
         blob = bucket.blob(imageNames[i])
