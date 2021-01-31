@@ -1,5 +1,4 @@
-// var apiUrl = "http://35.190.172.118"
-var apiUrl = "http://localhost"
+var apiUrl = "http://35.190.172.118";
 var imageNames = [];
 // Run on page load
 $( document ).ready(function() {
@@ -9,8 +8,8 @@ $( document ).ready(function() {
     downloadNewImages();
     // Create webcam object
     Webcam.set({
-        width: 60,
-        height: 45,
+        width: 220,
+        height: 190,
         image_format: 'jpeg',
         jpeg_quality: 100
     });
@@ -23,10 +22,10 @@ $( document ).ready(function() {
         navigator.msGetUserMedia);
 
     navigator.getMedia({video: true}, function() {
-        // Take first image
-        takeSnapShot()
-        // Trigger function every 5 seconds
-        setInterval(takeSnapShot, 5000)
+        // // Take first image
+        // takeSnapShot()
+        // // Trigger function every 5 seconds
+        // setInterval(takeSnapShot, 5000)
     }, function() {
         console.log("Webcam not available.");
     });
@@ -43,7 +42,7 @@ function takeSnapShot() {
             });
         });
     } catch (error) {
-          console.log("Error:"+error);
+        console.log("Error:"+error);
     }
 }
 
@@ -58,7 +57,7 @@ function createPlaceholderContainerContents() {
 
 function downloadNewImages() {
     returnHtml = "<table><tr>";
-    $.get(apiUrl+":5000/fetchImages", function(resp) {
+    $.get("http://localhost:5000/fetchImages", function(resp) {
         downloadedData = resp.body;
         imageData = [];
         Object.keys(downloadedData).forEach(function(key) {
@@ -86,10 +85,22 @@ function submit() {
         $("#container"+i).css("border", "5px solid transparent");
     }
     params = {"imageNames": JSON.stringify(imageNames), "typeToIdentify": $("#sltItems").val()};
-    $.post(apiUrl+":5000/identifyBrickType", params, function(resp) {
+    $.post("http://localhost:5000/identifyBrickType", params, function(resp) {
         resp.body.forEach(function(index) {
             $("#container"+index).css("border", "5px solid rgb(51, 255, 0)");
         });
         $("#loader").fadeOut();
+        takeDelayedPhoto(1000);
     });
+}
+
+// Async function to take a photo after a specified number of miliseconds
+async function takeDelayedPhoto(ms) {
+    await(sleep(ms));
+    takeSnapShot();
+}
+
+// Function to sleep (time in milliseconds)
+function sleep(time) {
+    return new Promise(resolve => setTimeout(resolve, time));
 }
