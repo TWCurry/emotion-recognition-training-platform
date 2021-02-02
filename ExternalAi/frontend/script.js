@@ -88,7 +88,7 @@ function takeSnapShot() {
             $.post(apiUrl+":5000/uploadImage", params, function(resp) {
                 console.log(resp);
                 if ("emotion" in resp) {
-                    sendTrainingDetails();
+                    sendTrainingDetails(resp.emotion);
                 }
             });
         });
@@ -98,13 +98,14 @@ function takeSnapShot() {
 }
 
 // Function to send details about AI and facial expression to backend API
-function sendTrainingDetails() {
+function sendTrainingDetails(emotion) {
     params = {
         "imageNames": JSON.stringify(imageNames),
         "typeToIdentify": typeToIdentify,
-        "responseIndex": responseIndex
+        "responseIndex": responseIndex,
+        "emotion": emotion
     };
-    $.post(apiUrl+":5000/validateResults", params, function(resp) {
+    $.post(apiUrl+":5000/uploadTrainingDetails", params, function(resp) {
         console.log(resp);
     });
 }
