@@ -80,11 +80,11 @@ def createResponse(statusCode, body):
 def storeTrainingData():
     # Parameters
     try:
-        modelName = json.loads(request.form.getlist('modelName')[0])
+        modelName = str(request.form.getlist('modelName')[0])
         imageNames = json.loads(request.form.getlist('imageNames')[0])
         typeToIdentify = str(request.form.getlist('typeToIdentify')[0])
-        responseIndex = json.loads(request.form.getlist('responseIndex')[0])
-        emotion = json.loads(request.form.getlist('emotion')[0])
+        responseIndex = str(request.form.getlist('responseIndex')[0])
+        emotion = str(request.form.getlist('emotion')[0])
     except Exception as e:
         print(f"Failed to get parameters - {e}")
         response = flask.jsonify({
