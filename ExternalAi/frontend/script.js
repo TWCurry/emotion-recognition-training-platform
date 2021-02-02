@@ -103,7 +103,8 @@ function sendTrainingDetails(emotion) {
         "imageNames": JSON.stringify(imageNames),
         "typeToIdentify": typeToIdentify,
         "responseIndex": responseIndex,
-        "emotion": emotion
+        "emotion": emotion,
+        "modelName": "legoAI"
     };
     $.post(apiUrl+":5000/uploadTrainingDetails", params, function(resp) {
         console.log(resp);
