@@ -14,22 +14,6 @@ $( document ).ready(function() {
         jpeg_quality: 100
     });
     Webcam.attach('#camera');
-
-    // Detect whether the user has given permission (asks again, but unlikely the user will deny the second time)
-    navigator.getMedia = ( navigator.getUserMedia ||
-        navigator.webkitGetUserMedia ||
-        navigator.mozGetUserMedia ||
-        navigator.msGetUserMedia);
-
-    navigator.getMedia({video: true}, function() {
-        // // Take first image
-        // takeSnapShot()
-        // // Trigger function every 5 seconds
-        // setInterval(takeSnapShot, 5000)
-    }, function() {
-        console.log("Webcam not available.");
-    });
-    
 });
 
 function takeSnapShot() {
