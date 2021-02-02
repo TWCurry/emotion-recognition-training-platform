@@ -1,4 +1,4 @@
-import boto3, base64, cv2, json, flask ,os
+import base64, cv2, json, flask
 import numpy as np
 # from PIL import Image
 from flask import Flask, request
@@ -41,15 +41,10 @@ def infer():
         print("No faces found.")
         return createResponse(200, "No faces found.")
 
-    imgB64 = ""
-
     for (x, y, w, h) in faces:
         # Capture image of face, resize to 48x48
         faceImage = img[y:y+w,x:x+h]
         faceImage = cv2.resize(faceImage,(48,48))
-        # Convert image to base64 for returning to client
-        retval, buffer = cv2.imencode('.jpg', faceImage)
-        imgB64 = base64.b64encode(buffer)
         # Convert to numpy array and expand dimensions to be used as inputs for models
         imgArr = np.array(faceImage, dtype=np.float32)
         imgArr = np.expand_dims(imgArr, axis=0)
@@ -71,7 +66,6 @@ def infer():
     predictions = interpreter.get_tensor(outputDetails[0]['index'])
     emotion = emotionNames[np.argmax(predictions[0])]
     print(emotion)
-
 
     response = flask.jsonify({
         "statusCode": 200,
