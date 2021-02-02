@@ -89,7 +89,8 @@ def infer():
 
 
     response = flask.jsonify({
-        "statusMessage": "Function executed successfully",
+        "statusCode": 200,
+        "body": "Function executed successfully",
         "emotion": emotion
     })
     response.headers.add("Access-Control-Allow-Origin", "*")
