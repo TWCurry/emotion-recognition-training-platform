@@ -12,15 +12,6 @@ app = Flask(__name__)
 
 @app.route("/uploadImage", methods=["POST"])
 def infer():
-    # Load Config
-    try:
-        f = open("config.json", "r")
-        configData = json.loads(f.read())
-        f.close()
-    except Exception as e:
-        print(f"Could not load config - {e}")
-        return createResponse(500, f"Could not load config - {e}")
-
     imageData = str(request.form.getlist('imageData')[0])
     print("Loading image...")
     imageData = unquote(imageData) # Url decode body
