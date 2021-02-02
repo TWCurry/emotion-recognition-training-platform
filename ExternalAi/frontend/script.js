@@ -1,5 +1,7 @@
 var apiUrl = "http://35.190.172.118";
 var imageNames = [];
+var typeToIdentify;
+var responseIndex;
 // Run on page load
 $( document ).ready(function() {
     $("#loader").hide();
@@ -15,20 +17,6 @@ $( document ).ready(function() {
     });
     Webcam.attach('#camera');
 });
-
-function takeSnapShot() {
-    console.log("Sending image...")
-    try {
-        Webcam.snap(function (data) {
-            params = {"imageData": data};
-            $.post(apiUrl+":5000/uploadImage", params, function(resp) {
-                console.log(resp);
-            });
-        });
-    } catch (error) {
-        console.log("Error:"+error);
-    }
-}
 
 function createPlaceholderContainerContents() {
     returnHtml = "<table><tr>";
@@ -68,10 +56,12 @@ function submit() {
     for (i=0;i<9;i++) {
         $("#container"+i).css("border", "5px solid transparent");
     }
-    params = {"imageNames": JSON.stringify(imageNames), "typeToIdentify": $("#sltItems").val()};
+    typeToIdentify = $("#sltItems").val();
+    params = {"imageNames": JSON.stringify(imageNames), "typeToIdentify": typeToIdentify};
     $.post("http://localhost:5000/identifyBrickType", params, function(resp) {
         resp.body.forEach(function(index) {
             $("#container"+index).css("border", "5px solid rgb(51, 255, 0)");
+            responseIndex = index;
         });
         $("#loader").fadeOut();
         takeDelayedPhoto(1000);
@@ -87,4 +77,34 @@ async function takeDelayedPhoto(ms) {
 // Function to sleep (time in milliseconds)
 function sleep(time) {
     return new Promise(resolve => setTimeout(resolve, time));
+}
+
+// Function to take photo and send to brick recognition AI
+function takeSnapShot() {
+    console.log("Sending image...")
+    try {
+        Webcam.snap(function (data) {
+            params = {"imageData": data};
+            $.post(apiUrl+":5000/uploadImage", params, function(resp) {
+                console.log(resp);
+                if ("emotion" in resp) {
+                    sendTrainingDetails();
+                }
+            });
+        });
+    } catch (error) {
+        console.log("Error:"+error);
+    }
+}
+
+// Function to send details about AI and facial expression to backend API
+function sendTrainingDetails() {
+    params = {
+        "imageNames": JSON.stringify(imageNames),
+        "typeToIdentify": typeToIdentify,
+        "responseIndex": responseIndex
+    };
+    $.post(apiUrl+":5000/validateResults", params, function(resp) {
+        console.log(resp);
+    });
 }
