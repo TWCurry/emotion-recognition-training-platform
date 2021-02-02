@@ -17,8 +17,6 @@ def infer():
         f = open("config.json", "r")
         configData = json.loads(f.read())
         f.close()
-        modelPath = configData["modelPath"]
-        modelBucket = configData["modelBucket"]
     except Exception as e:
         print(f"Could not load config - {e}")
         return createResponse(500, f"Could not load config - {e}")
@@ -55,19 +53,6 @@ def infer():
         # Convert to numpy array and expand dimensions to be used as inputs for models
         imgArr = np.array(faceImage, dtype=np.float32)
         imgArr = np.expand_dims(imgArr, axis=0)
-
-    # Download model from S3
-    if not(os.path.exists("model.tflite")):
-        print("Downloading model from S3...")
-        try:
-            s3 = boto3.client('s3')
-            s3.download_file(modelBucket, modelPath, "model.tflite")
-        except Exception as e:
-            print(f"Could not load model - {e}")
-            return createResponse(500, f"Could not load model - {e}")
-        print("Downloaded model successfully.")
-    else:
-        print("Model already exists, skipping download.")
 
     # Load model
     print("Loading model...")
