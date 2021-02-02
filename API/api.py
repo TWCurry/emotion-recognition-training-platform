@@ -1,8 +1,9 @@
-import base64, cv2, json, flask
+import base64, cv2, json, flask, time
 import numpy as np
 # from PIL import Image
 from flask import Flask, request
 from urllib.parse import unquote
+from google.cloud import firestore
 import tflite_runtime.interpreter as tflite
 
 emotionNames = ["Afraid", "Angry", "Disgusted", "Happy", "Neutral", "Sad", "Surprised"]
@@ -74,6 +75,39 @@ def createResponse(statusCode, body):
     })
     response.headers.add("Access-Control-Allow-Origin", "*")
     return response
+
+@app.route("/uploadTrainingDetails", methods=["POST"])
+def storeTrainingData():
+    # Parameters
+    try:
+        modelName = json.loads(request.form.getlist('modelName')[0])
+        imageNames = json.loads(request.form.getlist('imageNames')[0])
+        typeToIdentify = str(request.form.getlist('typeToIdentify')[0])
+        responseIndex = json.loads(request.form.getlist('responseIndex')[0])
+        emotion = json.loads(request.form.getlist('emotion')[0])
+    except Exception as e:
+        print(f"Failed to get parameters - {e}")
+        response = flask.jsonify({
+            "statusCode": 400,
+            "body": "Invalid parameters."
+        })
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        return response
+
+    # Instantiate Firebase connection
+    db = firestore.Client()
+
+    # Write training data to DB
+    timestamp = int(time.time())
+    document = db.collection("inferenceData").document(f"{timestamp}")
+    document.set({
+        "modelName": modelName,
+        "imageNames": (str(imageNames)),
+        "typeToIdentify": typeToIdentify,
+        "responseIndex": responseIndex,
+        "emotion": emotion
+    })
+
 
 if __name__ == "__main__":
     app.run()
