@@ -97,12 +97,18 @@ def storeTrainingData():
     # Instantiate Firebase connection
     db = firestore.Client()
 
+    # Create string to format image names for DB write
+    imageNameStr = ""
+    for image in imageNames:
+        imageNameStr += image+","
+    imageNameStr = imageNameStr[:-1]
+
     # Write training data to DB
     timestamp = int(time.time())
     document = db.collection("inferenceData").document(f"{timestamp}")
     document.set({
         "modelName": modelName,
-        "imageNames": (str(imageNames)),
+        "imageNames": imageNameStr,
         "typeToIdentify": typeToIdentify,
         "responseIndex": responseIndex,
         "emotion": emotion
