@@ -1,0 +1,11 @@
+{    
+    "customerModels": [
+        {   
+            "modelName": "legoAI",
+            "modelBucket": "tc-fer-application-models",
+            "modelPath": "legoModel.zip",
+            "datasetBucket": "tc-fer-application-datasets",
+            "classNames": ["11214", "18651", "2357", "3003", "3004", "3005", "3022", "3023", "3024", "3040", "3069", "32123", "3673", "3713", "3794", "6632"]
+        }
+    ]
+}
