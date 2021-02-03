@@ -1,7 +1,10 @@
-import json, sys, os
+import json, sys, os, zipfile, shutil
 from google.cloud import firestore, storage
+# from tensorflow import keras
+# from tensorflow.keras import layers
 
 modelFilenames = [] # Stores list of filenames, to delete after execution
+modelDirectories = [] # Stores list of directories, to delete after execution
 
 # If emotion is positive, we assume the AI was correct
 positiveEmotions = ["Happy"]
@@ -37,6 +40,7 @@ def main():
         if not(os.path.exists(f"{customerModel['modelName']}.zip")): # If statement to speed up testing
             blob.download_to_filename(f"{customerModel['modelName']}.zip")
             modelFilenames.append(f"{customerModel['modelName']}.zip")
+        modelDirectories.append(customerModel["modelName"])
 
     # Fetch fer data
     collection = db.collection("inferenceData")
@@ -70,6 +74,9 @@ def main():
     # Delete models
     # for fileName in modelFilenames:
     #     os.remove(fileName)
+    for dir in modelDirectories:
+        print(f"Removing {dir} directory...")
+        shutil.rmtree(dir)
 
 def generateTrainingData(configData, modelName, responseIndex, typeToIdentify, imageNames):
     # Identify model config data
@@ -89,6 +96,13 @@ def generateTrainingData(configData, modelName, responseIndex, typeToIdentify, i
     bucket = storage_client.bucket(bucketName)
     blob = bucket.blob(imageNames[responseIndex])
     blob.download_to_filename(f"image.{fileType}")
+
+    # Unzip model
+    with zipfile.ZipFile(f"{modelConfig['modelName']}.zip","r") as zip_ref:
+        zip_ref.extractall(modelConfig['modelName'])
+
+    # Load model
+    # model = keras.models.load_model(f"{modelConfig['modelName']}")
     os.remove(f"image.{fileType}")
 
 
