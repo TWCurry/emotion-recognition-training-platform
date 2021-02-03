@@ -61,7 +61,7 @@ def infer():
 
     response = flask.jsonify({
         "statusCode": 200,
-        "body": "Function executed successfully",
+        "body": "FER successful",
         "emotion": emotion
     })
     response.headers.add("Access-Control-Allow-Origin", "*")
@@ -89,7 +89,7 @@ def storeTrainingData():
         print(f"Failed to get parameters - {e}")
         response = flask.jsonify({
             "statusCode": 400,
-            "body": "Invalid parameters."
+            "body": "Invalid parameters"
         })
         response.headers.add("Access-Control-Allow-Origin", "*")
         return response
@@ -113,6 +113,13 @@ def storeTrainingData():
         "responseIndex": responseIndex,
         "emotion": emotion
     })
+
+    response = flask.jsonify({
+        "statusCode": 200,
+        "body": "Successfully written to db"
+    })
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response
 
 
 if __name__ == "__main__":
