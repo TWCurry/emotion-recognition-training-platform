@@ -1,0 +1,6 @@
+zipfile
+opencv-python
+numpy
+tensorflow
+google-cloud-storage
+google-cloud-firestore
