@@ -35,6 +35,7 @@ def main():
     
 
     # Download models
+    print("Downloading models...")
     for customerModel in configData["customerModels"]:
         print(f"Downloading model for {customerModel['modelName']}...")
         bucket = storage_client.bucket(customerModel["modelBucket"])
@@ -43,11 +44,14 @@ def main():
             blob.download_to_filename(f"{customerModel['modelName']}.zip")
         modelFilenames.append(f"{customerModel['modelName']}.zip")
         modelDirectories.append(customerModel["modelName"])
+    print("Downloaded all configured models.")
 
     # Fetch fer data
     collection = db.collection("inferenceData")
     docs = collection.stream()
     for rawDoc in docs:
+        print("=====================================================")
+        print(f"Reading document ID: {rawDoc.id}")
         doc = rawDoc.to_dict()
         # Fetch fields
         try:
@@ -75,8 +79,10 @@ def main():
         # rawDoc.delete()
 
     # Delete models
+    print("Deleting model zip files...")
     for fileName in modelFilenames:
         os.remove(fileName)
+    print("Deleting extracted models")
     for dir in modelDirectories:
         print(f"Removing {dir} directory...")
         shutil.rmtree(dir)
@@ -99,6 +105,7 @@ def generateTrainingData(configData, modelName, responseIndex, typeToIdentify, i
     width = int(modelConfig["imageDimensions"][1])
 
     # Fetch training image
+    print("Downloading new training image...")
     fileType = imageNames[responseIndex].split(".")[-1]
     bucketName = modelConfig["datasetBucket"]
     bucket = storage_client.bucket(bucketName)
@@ -106,6 +113,7 @@ def generateTrainingData(configData, modelName, responseIndex, typeToIdentify, i
     blob.download_to_filename(f"image.{fileType}")
 
     # Load image
+    print("Loading new training image...")
     im = cv2.imread(f"image.{fileType}")
     trainingData = []
     trainingLabels = []
@@ -113,18 +121,16 @@ def generateTrainingData(configData, modelName, responseIndex, typeToIdentify, i
     trainingLabels.append(str(classNames.index(typeToIdentify)))
     trainingData = np.array(trainingData)
     trainingLabels = np.array(trainingLabels)
-    print(typeToIdentify)
-    print(classNames)
-    print(trainingLabels)
     trainingLabels = keras.utils.to_categorical(trainingLabels, num_classes=int(modelConfig["numClasses"]))
-    print(trainingLabels)
-    trainingData = trainingData.reshape(trainingData.shape[0], height, width, 3)
+    trainingData = trainingData.reshape(trainingData.shape[0], height, width, int(modelConfig["colourChannels"]))
 
     # Unzip model
-    with zipfile.ZipFile(f"{modelConfig['modelName']}.zip","r") as zip_ref:
-        zip_ref.extractall(modelConfig['modelName'])
+    print("Unzipping model...")
+    with zipfile.ZipFile(f"{modelConfig['modelName']}.zip","r") as zipRef:
+        zipRef.extractall(modelConfig['modelName'])
 
     # Load model
+    print("Loading model...")
     model = keras.models.load_model(f"{modelConfig['modelName']}")
     print(model.summary())
 
@@ -136,6 +142,7 @@ def generateTrainingData(configData, modelName, responseIndex, typeToIdentify, i
     )
 
     # Train model
+    print("Training model...")
     epochs=5
     model.fit(
         trainingData,
@@ -143,10 +150,25 @@ def generateTrainingData(configData, modelName, responseIndex, typeToIdentify, i
         batch_size=1,
         epochs=epochs
     )
-    model.save("outputModel4")
 
+    # Save model
+    print("Saving model...")
+    model.save(f"{modelConfig['modelName']}-out")
+    shutil.make_archive(f"{modelConfig['modelName']}-out", 'zip', f"{modelConfig['modelName']}-out") # Zip directory
+
+    # Uploading model to GCP
+    uploadFile(f"{modelConfig['modelName']}-out.zip", modelConfig["modelBucket"], modelConfig["modelPath"])
+
+    # Remove training image
     os.remove(f"image.{fileType}")
 
+def uploadFile(fileToUpload, bucketName, path):
+    # Function to upload fileToUpload to the bucket and path specified
+    print(f"Uploading {fileToUpload} to {bucketName} bucket at {path}...")
+    client = storage.Client()
+    bucket = client.bucket(bucketName)
+    blob = bucket.blob(path)
+    blob.upload_from_filename(fileToUpload)
 
 if __name__ == "__main__":
     main()
