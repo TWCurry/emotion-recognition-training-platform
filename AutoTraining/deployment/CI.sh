@@ -13,14 +13,14 @@ cp AutoTraining/deployment/Dockerfile Dockerfile
 sudo docker build -t model-trainer:latest .
 
 # Tag image
-sudo docker tag model-trainer:latest localhost:5001/model-trainer:latest
+sudo docker tag model-trainer:latest eu.gcr.io/majestic-hybrid-301217/model-trainer:latest
 
 # Push image to registry
-sudo docker push localhost:5001/model-trainer:latest
+sudo docker push eu.gcr.io/majestic-hybrid-301217/model-trainer:latest
 
 # Remove locally cached images
 sudo docker image remove model-trainer:latest
-sudo docker image remove localhost:5001/model-trainer:latest
+sudo docker image remove eu.gcr.io/majestic-hybrid-301217/model-trainer:latest
 
 # Remove git repo
 cd ../
