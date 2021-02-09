@@ -7,7 +7,7 @@ cd emotion-recognition-training-platform
 git checkout dev
 
 # Copy Dockerfile from DevOps dir to root of repo
-cp ExternalAi/deployment/Dockerfile Dockerfile
+cp AutoTraining/deployment/Dockerfile Dockerfile
 
 # Build image
 sudo docker build -t model-trainer:latest .
