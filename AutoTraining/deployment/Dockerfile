@@ -12,7 +12,7 @@ RUN apt update -y
 RUN apt install libgl1-mesa-glx libglib2.0-0 -y
 
 # Install dependencies
-RUN pip install -r requirements.txt --no-cache-dir
+RUN pip install -r requirements.txt
 
 # Startup command
 CMD python3 trainModels.py
