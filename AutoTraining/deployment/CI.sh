@@ -13,14 +13,14 @@ cp ExternalAi/deployment/Dockerfile Dockerfile
 sudo docker build -t model-trainer:latest .
 
 # Tag image
-sudo docker tag modelTrainer:latest localhost:5001/modelTrainer:latest
+sudo docker tag model-trainer:latest localhost:5001/model-trainer:latest
 
 # Push image to registry
-sudo docker push localhost:5001/modelTrainer:latest
+sudo docker push localhost:5001/model-trainer:latest
 
 # Remove locally cached images
-sudo docker image remove modelTrainer:latest
-sudo docker image remove localhost:5001/modelTrainer:latest
+sudo docker image remove model-trainer:latest
+sudo docker image remove localhost:5001/model-trainer:latest
 
 # Remove git repo
 cd ../
