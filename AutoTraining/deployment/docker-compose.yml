@@ -1,4 +1,4 @@
 version: "3.8"
 services:
   lego-app:
-    image: localhost:5001/modelTrainer:latest
+    image: localhost:5001/model-trainer:latest

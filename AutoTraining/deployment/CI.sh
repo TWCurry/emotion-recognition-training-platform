@@ -10,7 +10,7 @@ git checkout dev
 cp ExternalAi/deployment/Dockerfile Dockerfile
 
 # Build image
-sudo docker build -t modelTrainer:latest .
+sudo docker build -t model-trainer:latest .
 
 # Tag image
 sudo docker tag modelTrainer:latest localhost:5001/modelTrainer:latest
