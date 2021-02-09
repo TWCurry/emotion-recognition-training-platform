@@ -13,7 +13,7 @@ cd ../
 echo -e """version: \"3.8\"
 services:
   lego-app:
-    image: localhost:5001/lego-api:${tag}
+    image: eu.gcr.io/majestic-hybrid-301217/lego-api:${tag}
     ports:
       - \"5002:5000\"
 """ > docker-compose.yml

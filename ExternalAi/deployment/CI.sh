@@ -30,14 +30,14 @@ cp ExternalAi/deployment/Dockerfile Dockerfile
 sudo docker build -t lego-api:$tag .
 
 # Tag image
-sudo docker tag lego-api:$tag localhost:5001/lego-api:$tag
+sudo docker tag lego-api:$tag eu.gcr.io/majestic-hybrid-301217/lego-api:$tag
 
 # Push image to registry
-sudo docker push localhost:5001/lego-api:$tag
+sudo docker push eu.gcr.io/majestic-hybrid-301217/lego-api:$tag
 
 # Remove locally cached images
 sudo docker image remove lego-api:$tag
-sudo docker image remove localhost:5001/lego-api:$tag
+sudo docker image remove eu.gcr.io/majestic-hybrid-301217/lego-api:$tag
 sudo docker image remove python
 
 # Remove git repo
