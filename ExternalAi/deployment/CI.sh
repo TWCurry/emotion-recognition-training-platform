@@ -22,6 +22,7 @@ gsutil cp gs://tc-fer-application-models/$modelName ExternalAi/API/model.zip
 # Unzip model
 mkdir ExternalAi/API/model
 unzip ExternalAi/API/model.zip -d ExternalAi/API/model
+rm ExternalAi/API/model.zip -f 
 
 # Copy Dockerfile from DevOps dir to root of repo
 cp ExternalAi/deployment/Dockerfile Dockerfile
