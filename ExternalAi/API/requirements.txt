@@ -2,5 +2,5 @@ opencv-python
 flask
 numpy
 google-cloud-storage
-PIL
+Pillow
 tensorflow
