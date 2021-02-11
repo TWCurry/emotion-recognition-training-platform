@@ -29,7 +29,7 @@ function createPlaceholderContainerContents() {
 
 function downloadNewImages() {
     returnHtml = "<table><tr>";
-    $.get("http://localhost:5000/fetchImages", function(resp) {
+    $.get(apiUrl+":5002/fetchImages", function(resp) {
         downloadedData = resp.body;
         imageData = [];
         Object.keys(downloadedData).forEach(function(key) {
@@ -58,7 +58,7 @@ function submit() {
     }
     typeToIdentify = $("#sltItems").val();
     params = {"imageNames": JSON.stringify(imageNames), "typeToIdentify": typeToIdentify};
-    $.post("http://localhost:5000/identifyBrickType", params, function(resp) {
+    $.post(apiUrl+":5002/identifyBrickType", params, function(resp) {
         resp.body.forEach(function(index) {
             $("#container"+index).css("border", "5px solid rgb(51, 255, 0)");
             responseIndex = index;
@@ -79,7 +79,7 @@ function sleep(time) {
     return new Promise(resolve => setTimeout(resolve, time));
 }
 
-// Function to take photo and send to brick recognition AI
+// Function to take photo and send to face regonition
 function takeSnapShot() {
     console.log("Sending image...")
     try {
