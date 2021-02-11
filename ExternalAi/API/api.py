@@ -40,7 +40,7 @@ def fetchImages():
 def identifyBrickType():
     # Load model
     print("Loading model...")
-    model = keras.models.load_model("outputModel4")
+    model = keras.models.load_model("model")
     probabilityModel = tf.keras.Sequential([model,tf.keras.layers.Softmax()]) # Create model to convert logits to probabilities
 
     imageNames = json.loads(request.form.getlist('imageNames')[0])

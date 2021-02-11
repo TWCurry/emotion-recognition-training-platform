@@ -1,8 +1,9 @@
-import boto3, base64, cv2, json, flask ,os
+import base64, cv2, json, flask, time
 import numpy as np
 # from PIL import Image
 from flask import Flask, request
 from urllib.parse import unquote
+from google.cloud import firestore
 import tflite_runtime.interpreter as tflite
 
 emotionNames = ["Afraid", "Angry", "Disgusted", "Happy", "Neutral", "Sad", "Surprised"]
@@ -12,17 +13,6 @@ app = Flask(__name__)
 
 @app.route("/uploadImage", methods=["POST"])
 def infer():
-    # Load Config
-    try:
-        f = open("config.json", "r")
-        configData = json.loads(f.read())
-        f.close()
-        modelPath = configData["modelPath"]
-        modelBucket = configData["modelBucket"]
-    except Exception as e:
-        print(f"Could not load config - {e}")
-        return createResponse(500, f"Could not load config - {e}")
-
     imageData = str(request.form.getlist('imageData')[0])
     print("Loading image...")
     imageData = unquote(imageData) # Url decode body
@@ -43,31 +33,13 @@ def infer():
         print("No faces found.")
         return createResponse(200, "No faces found.")
 
-    imgB64 = ""
-
     for (x, y, w, h) in faces:
         # Capture image of face, resize to 48x48
         faceImage = img[y:y+w,x:x+h]
         faceImage = cv2.resize(faceImage,(48,48))
-        # Convert image to base64 for returning to client
-        retval, buffer = cv2.imencode('.jpg', faceImage)
-        imgB64 = base64.b64encode(buffer)
         # Convert to numpy array and expand dimensions to be used as inputs for models
         imgArr = np.array(faceImage, dtype=np.float32)
         imgArr = np.expand_dims(imgArr, axis=0)
-
-    # Download model from S3
-    if not(os.path.exists("model.tflite")):
-        print("Downloading model from S3...")
-        try:
-            s3 = boto3.client('s3')
-            s3.download_file(modelBucket, modelPath, "model.tflite")
-        except Exception as e:
-            print(f"Could not load model - {e}")
-            return createResponse(500, f"Could not load model - {e}")
-        print("Downloaded model successfully.")
-    else:
-        print("Model already exists, skipping download.")
 
     # Load model
     print("Loading model...")
@@ -87,9 +59,9 @@ def infer():
     emotion = emotionNames[np.argmax(predictions[0])]
     print(emotion)
 
-
     response = flask.jsonify({
-        "statusMessage": "Function executed successfully",
+        "statusCode": 200,
+        "body": "FER successful",
         "emotion": emotion
     })
     response.headers.add("Access-Control-Allow-Origin", "*")
@@ -103,6 +75,52 @@ def createResponse(statusCode, body):
     })
     response.headers.add("Access-Control-Allow-Origin", "*")
     return response
+
+@app.route("/uploadTrainingDetails", methods=["POST"])
+def storeTrainingData():
+    # Parameters
+    try:
+        modelName = str(request.form.getlist('modelName')[0])
+        imageNames = json.loads(request.form.getlist('imageNames')[0])
+        typeToIdentify = str(request.form.getlist('typeToIdentify')[0])
+        responseIndex = str(request.form.getlist('responseIndex')[0])
+        emotion = str(request.form.getlist('emotion')[0])
+    except Exception as e:
+        print(f"Failed to get parameters - {e}")
+        response = flask.jsonify({
+            "statusCode": 400,
+            "body": "Invalid parameters"
+        })
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        return response
+
+    # Instantiate Firebase connection
+    db = firestore.Client()
+
+    # Create string to format image names for DB write
+    imageNameStr = ""
+    for image in imageNames:
+        imageNameStr += image+","
+    imageNameStr = imageNameStr[:-1]
+
+    # Write training data to DB
+    timestamp = int(time.time())
+    document = db.collection("inferenceData").document(f"{timestamp}")
+    document.set({
+        "modelName": modelName,
+        "imageNames": imageNameStr,
+        "typeToIdentify": typeToIdentify,
+        "responseIndex": responseIndex,
+        "emotion": emotion
+    })
+
+    response = flask.jsonify({
+        "statusCode": 200,
+        "body": "Successfully written to db"
+    })
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response
+
 
 if __name__ == "__main__":
     app.run()

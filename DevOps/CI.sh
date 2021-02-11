@@ -26,14 +26,14 @@ cp DevOps/Dockerfile Dockerfile
 sudo docker build -t fer-api:$tag .
 
 # Tag image
-sudo docker tag fer-api:$tag localhost:5001/fer-api:$tag
+sudo docker tag fer-api:$tag eu.gcr.io/majestic-hybrid-301217/fer-api:$tag
 
 # Push image to registry
-sudo docker push localhost:5001/fer-api:$tag
+sudo docker push eu.gcr.io/majestic-hybrid-301217/fer-api:$tag
 
 # Remove locally cached images
 sudo docker image remove fer-api:$tag
-sudo docker image remove localhost:5001/fer-api:$tag
+sudo docker image remove eu.gcr.io/majestic-hybrid-301217/fer-api:$tag
 sudo docker image remove python
 
 # Remove git repo
