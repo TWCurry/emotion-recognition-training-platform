@@ -17,11 +17,11 @@ cd emotion-recognition-training-platform
 git checkout $branch
 
 # Fetch model from GCP Storage
-gsutil cp gs://tc-fer-application-models/$modelName API/model.zip
+gsutil cp gs://tc-fer-application-models/$modelName ExternalAi/API/model.zip
 
 # Unzip model
-mkdir API/model
-unzip API/model.zip -d API/model
+mkdir ExternalAi/API/model
+unzip ExternalAi/API/model.zip -d ExternalAi/API/model
 
 # Copy Dockerfile from DevOps dir to root of repo
 cp ExternalAi/deployment/Dockerfile Dockerfile
