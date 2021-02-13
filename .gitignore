@@ -8,5 +8,5 @@ outputModel
 outputModel*
 *.min.js
 *.tflite
-ExternalAi/API/model/*
+*/model/*
 model

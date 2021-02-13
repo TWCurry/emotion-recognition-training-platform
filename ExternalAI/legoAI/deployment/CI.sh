@@ -17,15 +17,15 @@ cd emotion-recognition-training-platform
 git checkout $branch
 
 # Fetch model from GCP Storage
-gsutil cp gs://tc-fer-application-models/$modelName ExternalAi/API/model.zip
+gsutil cp gs://tc-fer-application-models/$modelName ExternalAI/legoAI/API/model.zip
 
 # Unzip model
-mkdir ExternalAi/API/model
-unzip ExternalAi/API/model.zip -d ExternalAi/API/model
-rm ExternalAi/API/model.zip -f 
+mkdir ExternalAI/legoAI/API/model
+unzip ExternalAI/legoAI/API/model.zip -d ExternalAI/legoAI/API/model
+rm ExternalAI/legoAI/API/model.zip -f 
 
 # Copy Dockerfile from DevOps dir to root of repo
-cp ExternalAi/deployment/Dockerfile Dockerfile
+cp ExternalAI/legoAI/deployment/Dockerfile Dockerfile
 
 # Build image
 sudo docker build -t lego-api:$tag .

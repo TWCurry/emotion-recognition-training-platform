@@ -5,7 +5,7 @@ FROM python:3.7.9-slim-buster
 WORKDIR /code
 
 # Copy source code
-COPY ExternalAi/API/ .
+COPY ExternalAI/legoAI/API/ .
 
 # Update apt packages and instance dependencies for python packages
 RUN apt update -y

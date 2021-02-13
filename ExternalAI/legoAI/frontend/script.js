@@ -1,4 +1,5 @@
-var apiUrl = "http://35.190.172.118";
+var ferApiUrl = "http://35.223.63.52:5000";
+var legoApiUrl = "http:/34.122.186.153:5002";
 var imageNames = [];
 var typeToIdentify;
 var responseIndex;
@@ -29,7 +30,7 @@ function createPlaceholderContainerContents() {
 
 function downloadNewImages() {
     returnHtml = "<table><tr>";
-    $.get(apiUrl+":5002/fetchImages", function(resp) {
+    $.get(legoApiUrl+"/fetchImages", function(resp) {
         downloadedData = resp.body;
         imageData = [];
         Object.keys(downloadedData).forEach(function(key) {
@@ -58,7 +59,7 @@ function submit() {
     }
     typeToIdentify = $("#sltItems").val();
     params = {"imageNames": JSON.stringify(imageNames), "typeToIdentify": typeToIdentify};
-    $.post(apiUrl+":5002/identifyBrickType", params, function(resp) {
+    $.post(legoApiUrl+"/identifyBrickType", params, function(resp) {
         resp.body.forEach(function(index) {
             $("#container"+index).css("border", "5px solid rgb(51, 255, 0)");
             responseIndex = index;
@@ -85,7 +86,7 @@ function takeSnapShot() {
     try {
         Webcam.snap(function (data) {
             params = {"imageData": data};
-            $.post(apiUrl+":5000/uploadImage", params, function(resp) {
+            $.post(ferApiUrl+"/uploadImage", params, function(resp) {
                 console.log(resp);
                 if ("emotion" in resp) {
                     sendTrainingDetails(resp.emotion);
@@ -106,7 +107,7 @@ function sendTrainingDetails(emotion) {
         "emotion": emotion,
         "modelName": "legoAI"
     };
-    $.post(apiUrl+":5000/uploadTrainingDetails", params, function(resp) {
+    $.post(ferApiUrl+"/uploadTrainingDetails", params, function(resp) {
         console.log(resp);
     });
 }
