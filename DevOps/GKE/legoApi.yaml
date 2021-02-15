@@ -5,8 +5,8 @@ metadata:
     deployment.kubernetes.io/revision: "1"
   generation: 1
   labels:
-    app: fer-api
-  name: fer-api
+    app: lego-api
+  name: lego-api
   namespace: default
 spec:
   progressDeadlineSeconds: 600
@@ -14,7 +14,7 @@ spec:
   revisionHistoryLimit: 10
   selector:
     matchLabels:
-      app: fer-api
+      app: lego-api
   strategy:
     rollingUpdate:
       maxSurge: 25%
@@ -24,10 +24,10 @@ spec:
     metadata:
       creationTimestamp: null
       labels:
-        app: fer-api
+        app: lego-api
     spec:
       containers:
-      - image: eu.gcr.io/majestic-hybrid-301217/fer-api:0.1
+      - image: eu.gcr.io/majestic-hybrid-301217/lego-api:0.5
         imagePullPolicy: IfNotPresent
         resources: {}
       dnsPolicy: ClusterFirst
