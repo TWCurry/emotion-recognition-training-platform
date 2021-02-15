@@ -1,5 +1,5 @@
-var ferApiUrl = "http://10.120.1.219:5000";
-var legoApiUrl = "http:/34.122.186.153:5002";
+var ferApiUrl = "http://35.223.63.52:5002";
+var legoApiUrl = "http://34.122.186.153:5002";
 var imageNames = [];
 var typeToIdentify;
 var responseIndex;

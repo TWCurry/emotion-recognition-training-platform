@@ -3,11 +3,9 @@ kind: Service
 metadata:
   name: fer-api-service
 spec:
-  clusterIP: 10.120.6.9
   externalTrafficPolicy: Cluster
   ports:
-  - nodePort: 31141
-    port: 5002
+  - port: 5000
     protocol: TCP
     targetPort: 5000
   selector:
