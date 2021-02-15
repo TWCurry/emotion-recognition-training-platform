@@ -29,6 +29,7 @@ spec:
       containers:
       - image: eu.gcr.io/majestic-hybrid-301217/lego-api:0.5
         imagePullPolicy: IfNotPresent
+        name: lego-api-sha256-1
         resources: {}
       dnsPolicy: ClusterFirst
       restartPolicy: Always

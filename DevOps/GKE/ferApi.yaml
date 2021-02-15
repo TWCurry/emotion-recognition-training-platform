@@ -29,6 +29,7 @@ spec:
       containers:
       - image: eu.gcr.io/majestic-hybrid-301217/fer-api:0.1
         imagePullPolicy: IfNotPresent
+        name: fer-api-sha256-1
         resources: {}
       dnsPolicy: ClusterFirst
       restartPolicy: Always
