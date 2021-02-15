@@ -1,16 +1,16 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: fer-api-service
+  name: lego-api-service
 spec:
   clusterIP: 10.120.6.9
   externalTrafficPolicy: Cluster
   ports:
   - nodePort: 31141
-    port: 5002
+    port: 5000
     protocol: TCP
     targetPort: 5000
   selector:
-    app: fer-api
+    app: lego-api
   sessionAffinity: None
   type: LoadBalancer
