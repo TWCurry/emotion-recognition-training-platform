@@ -76,7 +76,7 @@ def main():
             sys.exit(1)
 
         # Delete docs
-        deleteCollection()
+        deleteCollection(collection, 5)
 
     # Delete models
     print("Deleting model zip files...")
