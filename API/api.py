@@ -4,8 +4,10 @@ import numpy as np
 from flask import Flask, request
 from urllib.parse import unquote
 from google.cloud import firestore
+from elasticsearch import Elasticsearch
 import tflite_runtime.interpreter as tflite
 
+es = Elasticsearch()
 emotionNames = ["Afraid", "Angry", "Disgusted", "Happy", "Neutral", "Sad", "Surprised"]
 
 # Initialisation
@@ -106,13 +108,18 @@ def storeTrainingData():
     # Write training data to DB
     timestamp = int(time.time())
     document = db.collection("inferenceData").document(f"{timestamp}")
-    document.set({
+    doc = {
         "modelName": modelName,
         "imageNames": imageNameStr,
         "typeToIdentify": typeToIdentify,
         "responseIndex": responseIndex,
         "emotion": emotion
-    })
+    }
+    # Write to Firestore
+    document.set(doc)
+    # Write to Elasticsearch
+    res = es.index(index="test-index", id=1, body=doc)
+    print(res['result'])
 
     response = flask.jsonify({
         "statusCode": 200,
