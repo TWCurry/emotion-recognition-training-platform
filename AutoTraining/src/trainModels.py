@@ -75,8 +75,8 @@ def main():
             print(f"Invalid emotion {emotion}.")
             sys.exit(1)
 
-        # Delete doc
-        rawDoc.delete()
+        # Delete docs
+        deleteCollection()
 
     # Delete models
     print("Deleting model zip files...")
@@ -86,6 +86,18 @@ def main():
     for dir in modelDirectories:
         print(f"Removing {dir} directory...")
         shutil.rmtree(dir)
+
+def deleteCollection(collection, batchSize):
+    docs = collection.limit(batchSize).stream()
+    deleted = 0
+
+    for doc in docs:
+        print(f'Deleting doc {doc.id} => {doc.to_dict()}')
+        doc.reference.delete()
+        deleted = deleted + 1
+
+    if deleted >= batchSize:
+        return deleteCollection(collection, batchSize)
 
 def generateTrainingData(configData, modelName, responseIndex, typeToIdentify, imageNames):
     # Identify model config data
