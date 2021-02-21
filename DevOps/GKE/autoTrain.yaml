@@ -12,3 +12,4 @@ spec:
           containers:
           - name: autotraining
             image: eu.gcr.io/majestic-hybrid-301217/model-trainer:latest
+          restartPolicy: Never
