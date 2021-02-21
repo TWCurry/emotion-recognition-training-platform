@@ -2,7 +2,7 @@
 apiVersion: batch/v1beta1
 kind: CronJob
 metadata:
-  name: hello
+  name: autotraining
 spec:
   schedule: "*/5 * * * *"
   jobTemplate:
