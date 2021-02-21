@@ -76,7 +76,7 @@ def main():
             sys.exit(1)
 
         # Delete doc
-        # rawDoc.delete()
+        rawDoc.delete()
 
     # Delete models
     print("Deleting model zip files...")
