@@ -75,8 +75,8 @@ def main():
             print(f"Invalid emotion {emotion}.")
             sys.exit(1)
 
-        # Delete docs
-        deleteCollection(collection, 5)
+    # Delete docs
+    deleteCollection(collection, 5)
 
     # Delete models
     print("Deleting model zip files...")
@@ -92,7 +92,6 @@ def deleteCollection(collection, batchSize):
     deleted = 0
 
     for doc in docs:
-        print(f'Deleting doc {doc.id} => {doc.to_dict()}')
         doc.reference.delete()
         deleted = deleted + 1
 
