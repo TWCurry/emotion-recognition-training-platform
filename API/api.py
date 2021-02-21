@@ -118,7 +118,7 @@ def storeTrainingData():
     # Write to Firestore
     document.set(doc)
     # Write to Elasticsearch
-    res = es.index(index="test-index", id=1, body=doc)
+    res = es.index(index="test-index", body=doc)
     print(res['result'])
 
     response = flask.jsonify({
