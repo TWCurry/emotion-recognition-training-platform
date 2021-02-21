@@ -1,0 +1,14 @@
+# CronJob
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: hello
+spec:
+  schedule: "*/5 * * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+          - name: autotraining
+            image: eu.gcr.io/majestic-hybrid-301217/model-trainer:latest
