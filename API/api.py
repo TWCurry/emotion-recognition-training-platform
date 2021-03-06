@@ -30,6 +30,7 @@ def infer():
         nparr = np.frombuffer(imageData, np.uint8) # Load image into numpy array
         img = cv2.imdecode(nparr, 0) # Convert to grayscale cv2 image
     except Exception as e:
+        print(f"Image data error - {e}")
         response = flask.jsonify({"body": f"Image data error - {e}"})
         response.headers.add("Access-Control-Allow-Origin", "*")
         return response, 400
@@ -37,15 +38,22 @@ def infer():
     imgArr = np.zeros((48,48)) # Empty array, will store the image data
 
     # Load Haar-Cascade
-    print("Loading Haar-Cascade...")
-    faceCascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+    try:
+        print("Loading Haar-Cascade...")
+        faceCascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 
-    # Detect the faces in the image
-    print("Detecting faces in image...")
-    faces = faceCascade.detectMultiScale(img, 1.1, 4)
+        # Detect the faces in the image
+        print("Detecting faces in image...")
+        faces = faceCascade.detectMultiScale(img, 1.1, 4)
+    except Exception as e:
+        print(f"Could not load Haar-Cascade - {e}")
+        response = flask.jsonify({"body": f"Error identifying faces in image"})
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        return response, 500
+
     if(len(faces)) == 0:
         print("No faces found.")
-        response = flask.jsonify({"body": "No faces found."})
+        response = flask.jsonify({"body": "No faces found"})
         return response, 200
 
     for (x, y, w, h) in faces:
