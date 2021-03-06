@@ -20,14 +20,20 @@ bucket = client.bucket(bucketName)
 def fetchImages():
     imgNames = []
     returnData = {}
-    for blob in client.list_blobs(bucketName, prefix="legoDataset"):
-        imgNames.append(blob)
-    for i in range(2):
-        index = random.randint(0, len(imgNames)-1)
-        blob = bucket.blob(imgNames[index].name)
-        data = blob.download_as_bytes()
-        b64Data = base64.b64encode(data)
-        returnData[i] = {imgNames[index].name:(str(b64Data))}
+    try:
+        for blob in client.list_blobs(bucketName, prefix="legoDataset"):
+            imgNames.append(blob)
+        for i in range(2):
+            index = random.randint(0, len(imgNames)-1)
+            blob = bucket.blob(imgNames[index].name)
+            data = blob.download_as_bytes()
+            b64Data = base64.b64encode(data)
+            returnData[i] = {imgNames[index].name:(str(b64Data))}
+    except Exception as e:
+        print(f"Could not fetch Lego images - {e}")
+        response = flask.jsonify({"body": "Could not fetch images"})
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        return response, 500
 
     response = flask.jsonify({"body": returnData})
     response.headers.add("Access-Control-Allow-Origin", "*")
