@@ -15,25 +15,45 @@ app = Flask(__name__)
 
 @app.route("/uploadImage", methods=["POST"])
 def infer():
-    imageData = str(request.form.getlist('imageData')[0])
+    if "imageData" in request.args:
+        imageData = str(request.form.getlist('imageData')[0])
+    else:
+        print("Missing imageData")
+        response = flask.jsonify({"body": "Missing imageData."})
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        return response, 400
     print("Loading image...")
-    imageData = unquote(imageData) # Url decode body
-    imageData = imageData.split(",")[1] # Remove b64 header
-    imageData = base64.b64decode(imageData) # decode base64 to bytes
-    nparr = np.frombuffer(imageData, np.uint8) # Load image into numpy array
-    img = cv2.imdecode(nparr, 0) # Convert to grayscale cv2 image
+    try:
+        imageData = unquote(imageData) # Url decode body
+        imageData = imageData.split(",")[1] # Remove b64 header
+        imageData = base64.b64decode(imageData) # decode base64 to bytes
+        nparr = np.frombuffer(imageData, np.uint8) # Load image into numpy array
+        img = cv2.imdecode(nparr, 0) # Convert to grayscale cv2 image
+    except Exception as e:
+        print(f"Image data error - {e}")
+        response = flask.jsonify({"body": f"Image data error - {e}"})
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        return response, 400
+
     imgArr = np.zeros((48,48)) # Empty array, will store the image data
 
     # Load Haar-Cascade
-    print("Loading Haar-Cascade...")
-    faceCascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+    try:
+        print("Loading Haar-Cascade...")
+        faceCascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
 
-    # Detect the faces in the image
-    print("Detecting faces in image...")
-    faces = faceCascade.detectMultiScale(img, 1.1, 4)
+        # Detect the faces in the image
+        print("Detecting faces in image...")
+        faces = faceCascade.detectMultiScale(img, 1.1, 4)
+    except Exception as e:
+        print(f"Could not load Haar-Cascade - {e}")
+        response = flask.jsonify({"body": f"Error identifying faces in image"})
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        return response, 500
+
     if(len(faces)) == 0:
         print("No faces found.")
-        response = flask.jsonify({"body": "No faces found."})
+        response = flask.jsonify({"body": "No faces found"})
         return response, 200
 
     for (x, y, w, h) in faces:
@@ -44,23 +64,29 @@ def infer():
         imgArr = np.array(faceImage, dtype=np.float32)
         imgArr = np.expand_dims(imgArr, axis=0)
 
-    # Load model
-    print("Loading model...")
-    interpreter = tflite.Interpreter(model_path="model.tflite")
-    interpreter.allocate_tensors()
+    try:
+        # Load model
+        print("Loading model...")
+        interpreter = tflite.Interpreter(model_path="model.tflite")
+        interpreter.allocate_tensors()
 
-    # Load input data to model
-    inputDetails = interpreter.get_input_details()
-    outputDetails = interpreter.get_output_details()
-    inputData = np.expand_dims(imgArr, axis=3)
-    interpreter.set_tensor(inputDetails[0]['index'], inputData)
-    print("Successfully loaded model, running...")
+        # Load input data to model
+        inputDetails = interpreter.get_input_details()
+        outputDetails = interpreter.get_output_details()
+        inputData = np.expand_dims(imgArr, axis=3)
+        interpreter.set_tensor(inputDetails[0]['index'], inputData)
+        print("Successfully loaded model, running...")
 
-    # Run model
-    interpreter.invoke()
-    predictions = interpreter.get_tensor(outputDetails[0]['index'])
-    emotion = emotionNames[np.argmax(predictions[0])]
-    print(emotion)
+        # Run model
+        interpreter.invoke()
+        predictions = interpreter.get_tensor(outputDetails[0]['index'])
+        emotion = emotionNames[np.argmax(predictions[0])]
+        print(emotion)
+    except Exception as e:
+        print(f"Emotion recognition error - {e}")
+        response = flask.jsonify({"body": f"Error identifying emotion"})
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        return response, 500
 
     response = flask.jsonify({
         "statusCode": 200,
@@ -73,6 +99,13 @@ def infer():
 @app.route("/uploadTrainingDetails", methods=["POST"])
 def storeTrainingData():
     # Parameters
+    requiredParameters = ["modelName", "imageNames", "typeToIdentify", "responseIndex", "emotion"]
+    for rParam in requiredParameters:
+        if not(rParam in request.args):
+            print(f"Missing param '{rParam}'")
+            response = flask.jsonify({"body": f"Missing param '{rParam}'"})
+            response.headers.add("Access-Control-Allow-Origin", "*")
+            return response, 400
     try:
         modelName = str(request.form.getlist('modelName')[0])
         imageNames = json.loads(request.form.getlist('imageNames')[0])
@@ -85,30 +118,42 @@ def storeTrainingData():
         response.headers.add("Access-Control-Allow-Origin", "*")
         return response, 400
 
-    # Instantiate Firebase connection
-    db = firestore.Client()
+    try:
+        # Instantiate Firebase connection
+        db = firestore.Client()
 
-    # Create string to format image names for DB write
-    imageNameStr = ""
-    for image in imageNames:
-        imageNameStr += image+","
-    imageNameStr = imageNameStr[:-1]
+        # Create string to format image names for DB write
+        imageNameStr = ""
+        for image in imageNames:
+            imageNameStr += image+","
+        imageNameStr = imageNameStr[:-1]
 
-    # Write training data to DB
-    timestamp = int(time.time())
-    document = db.collection("inferenceData").document(f"{timestamp}")
-    doc = {
-        "modelName": modelName,
-        "imageNames": imageNameStr,
-        "typeToIdentify": typeToIdentify,
-        "responseIndex": responseIndex,
-        "emotion": emotion
-    }
-    # Write to Firestore
-    document.set(doc)
-    # Write to Elasticsearch
-    res = es.index(index="test-index", body=doc)
-    print(res['result'])
+        # Write training data to DB
+        timestamp = int(time.time())
+        document = db.collection("inferenceData").document(f"{timestamp}")
+        doc = {
+            "modelName": modelName,
+            "imageNames": imageNameStr,
+            "typeToIdentify": typeToIdentify,
+            "responseIndex": responseIndex,
+            "emotion": emotion
+        }
+        # Write to Firestore
+        document.set(doc)
+    except Exception as e:
+        print(f"Could not write to Firestore - {e}")
+        response = flask.jsonify({"body": f"Error storing training details"})
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        return response, 500
+
+    try:
+        # Write to Elasticsearch
+        res = es.index(index="test-index", body=doc)
+    except Exception as e:
+        print(f"Could not write to Elasticsearch - {e}")
+        response = flask.jsonify({"body": f"Error storing training details"})
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        return response, 500
 
     response = flask.jsonify({"body": "Successfully written to db"})
     response.headers.add("Access-Control-Allow-Origin", "*")
