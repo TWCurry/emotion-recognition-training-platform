@@ -41,13 +41,21 @@ def fetchImages():
 
 @app.route("/identifyBrickType", methods=["POST"])
 def identifyBrickType():
+    # Handle parameters
+    try:
+        imageNames = json.loads(request.form.getlist('imageNames')[0])
+        typeToIdentify = str(request.form.getlist('typeToIdentify')[0])
+    except Exception as e:
+        print(f"Invalid parameters - {e}")
+        response = flask.jsonify({"body": "Invalid parameters"})
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        return response, 400
+
     # Load model
     print("Loading model...")
     model = keras.models.load_model("model")
     probabilityModel = tf.keras.Sequential([model,tf.keras.layers.Softmax()]) # Create model to convert logits to probabilities
 
-    imageNames = json.loads(request.form.getlist('imageNames')[0])
-    typeToIdentify = str(request.form.getlist('typeToIdentify')[0])
     indicesContainingImage = []
     fileNames = []
 
