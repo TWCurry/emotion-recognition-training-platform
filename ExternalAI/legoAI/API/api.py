@@ -29,12 +29,9 @@ def fetchImages():
         b64Data = base64.b64encode(data)
         returnData[i] = {imgNames[index].name:(str(b64Data))}
 
-    response = flask.jsonify({
-        "statusCode": 200,
-        "body": returnData
-    })
+    response = flask.jsonify({"body": returnData})
     response.headers.add("Access-Control-Allow-Origin", "*")
-    return response
+    return response, 200
 
 @app.route("/identifyBrickType", methods=["POST"])
 def identifyBrickType():
@@ -75,12 +72,9 @@ def identifyBrickType():
         except:
             print(f"Warning - could not delete file {file}.")
 
-    response = flask.jsonify({
-            "statusCode": 200,
-            "body": indicesContainingImage
-        })
+    response = flask.jsonify({"body": indicesContainingImage})
     response.headers.add("Access-Control-Allow-Origin", "*")
-    return response
+    return response, 200
 
 if __name__ == "__main__":
     app.run()

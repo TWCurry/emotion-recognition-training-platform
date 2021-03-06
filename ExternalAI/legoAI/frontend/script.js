@@ -107,7 +107,6 @@ function sendTrainingDetails(emotion) {
         "emotion": emotion,
         "modelName": "legoAI"
     };
-    console.log(params)
     $.post(ferApiUrl+"/uploadTrainingDetails", params, function(resp) {
         console.log(resp);
     });
