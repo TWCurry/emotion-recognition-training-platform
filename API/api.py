@@ -111,30 +111,42 @@ def storeTrainingData():
         response.headers.add("Access-Control-Allow-Origin", "*")
         return response, 400
 
-    # Instantiate Firebase connection
-    db = firestore.Client()
+    try:
+        # Instantiate Firebase connection
+        db = firestore.Client()
 
-    # Create string to format image names for DB write
-    imageNameStr = ""
-    for image in imageNames:
-        imageNameStr += image+","
-    imageNameStr = imageNameStr[:-1]
+        # Create string to format image names for DB write
+        imageNameStr = ""
+        for image in imageNames:
+            imageNameStr += image+","
+        imageNameStr = imageNameStr[:-1]
 
-    # Write training data to DB
-    timestamp = int(time.time())
-    document = db.collection("inferenceData").document(f"{timestamp}")
-    doc = {
-        "modelName": modelName,
-        "imageNames": imageNameStr,
-        "typeToIdentify": typeToIdentify,
-        "responseIndex": responseIndex,
-        "emotion": emotion
-    }
-    # Write to Firestore
-    document.set(doc)
-    # Write to Elasticsearch
-    res = es.index(index="test-index", body=doc)
-    print(res['result'])
+        # Write training data to DB
+        timestamp = int(time.time())
+        document = db.collection("inferenceData").document(f"{timestamp}")
+        doc = {
+            "modelName": modelName,
+            "imageNames": imageNameStr,
+            "typeToIdentify": typeToIdentify,
+            "responseIndex": responseIndex,
+            "emotion": emotion
+        }
+        # Write to Firestore
+        document.set(doc)
+    except Exception as e:
+        print(f"Could not write to Firestore - {e}")
+        response = flask.jsonify({"body": f"Error storing training details"})
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        return response, 500
+
+    try:
+        # Write to Elasticsearch
+        res = es.index(index="test-index", body=doc)
+    except Exception as e:
+        print(f"Could not write to Elasticsearch - {e}")
+        response = flask.jsonify({"body": f"Error storing training details"})
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        return response, 500
 
     response = flask.jsonify({"body": "Successfully written to db"})
     response.headers.add("Access-Control-Allow-Origin", "*")
