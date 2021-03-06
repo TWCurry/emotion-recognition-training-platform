@@ -33,7 +33,8 @@ def infer():
     faces = faceCascade.detectMultiScale(img, 1.1, 4)
     if(len(faces)) == 0:
         print("No faces found.")
-        return createResponse(200, "No faces found.")
+        response = flask.jsonify({"body": "No faces found."})
+        return response, 201
 
     for (x, y, w, h) in faces:
         # Capture image of face, resize to 48x48
@@ -67,16 +68,7 @@ def infer():
         "emotion": emotion
     })
     response.headers.add("Access-Control-Allow-Origin", "*")
-    return response
-
-def createResponse(statusCode, body):
-    # Simple function to generate HTTP response with correct headers (to reduce repeated code)
-    response = flask.jsonify({
-        "statusCode": statusCode,
-        "body": str(body)
-    })
-    response.headers.add("Access-Control-Allow-Origin", "*")
-    return response
+    return response, 200
 
 @app.route("/uploadTrainingDetails", methods=["POST"])
 def storeTrainingData():
@@ -89,12 +81,9 @@ def storeTrainingData():
         emotion = str(request.form.getlist('emotion')[0])
     except Exception as e:
         print(f"Failed to get parameters - {e}")
-        response = flask.jsonify({
-            "statusCode": 400,
-            "body": "Invalid parameters"
-        })
+        response = flask.jsonify({"body": "Invalid parameters"})
         response.headers.add("Access-Control-Allow-Origin", "*")
-        return response
+        return response, 400
 
     # Instantiate Firebase connection
     db = firestore.Client()
@@ -121,12 +110,9 @@ def storeTrainingData():
     res = es.index(index="test-index", body=doc)
     print(res['result'])
 
-    response = flask.jsonify({
-        "statusCode": 200,
-        "body": "Successfully written to db"
-    })
+    response = flask.jsonify({"body": "Successfully written to db"})
     response.headers.add("Access-Control-Allow-Origin", "*")
-    return response
+    return response, 200
 
 
 if __name__ == "__main__":
