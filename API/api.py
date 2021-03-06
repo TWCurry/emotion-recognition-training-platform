@@ -64,23 +64,29 @@ def infer():
         imgArr = np.array(faceImage, dtype=np.float32)
         imgArr = np.expand_dims(imgArr, axis=0)
 
-    # Load model
-    print("Loading model...")
-    interpreter = tflite.Interpreter(model_path="model.tflite")
-    interpreter.allocate_tensors()
+    try:
+        # Load model
+        print("Loading model...")
+        interpreter = tflite.Interpreter(model_path="model.tflite")
+        interpreter.allocate_tensors()
 
-    # Load input data to model
-    inputDetails = interpreter.get_input_details()
-    outputDetails = interpreter.get_output_details()
-    inputData = np.expand_dims(imgArr, axis=3)
-    interpreter.set_tensor(inputDetails[0]['index'], inputData)
-    print("Successfully loaded model, running...")
+        # Load input data to model
+        inputDetails = interpreter.get_input_details()
+        outputDetails = interpreter.get_output_details()
+        inputData = np.expand_dims(imgArr, axis=3)
+        interpreter.set_tensor(inputDetails[0]['index'], inputData)
+        print("Successfully loaded model, running...")
 
-    # Run model
-    interpreter.invoke()
-    predictions = interpreter.get_tensor(outputDetails[0]['index'])
-    emotion = emotionNames[np.argmax(predictions[0])]
-    print(emotion)
+        # Run model
+        interpreter.invoke()
+        predictions = interpreter.get_tensor(outputDetails[0]['index'])
+        emotion = emotionNames[np.argmax(predictions[0])]
+        print(emotion)
+    except Exception as e:
+        print(f"Emotion recognition error - {e}")
+        response = flask.jsonify({"body": f"Error identifying emotion"})
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        return response, 500
 
     response = flask.jsonify({
         "statusCode": 200,
