@@ -15,10 +15,10 @@ app = Flask(__name__)
 
 @app.route("/uploadImage", methods=["POST"])
 def infer():
-    try:
+    if "imageData" in request.args:
         imageData = str(request.form.getlist('imageData')[0])
-    except Exception as e:
-        print(e)
+    else:
+        print("Missing imageData")
         response = flask.jsonify({"body": "Missing imageData."})
         response.headers.add("Access-Control-Allow-Origin", "*")
         return response, 400
@@ -99,6 +99,13 @@ def infer():
 @app.route("/uploadTrainingDetails", methods=["POST"])
 def storeTrainingData():
     # Parameters
+    requiredParameters = ["modelName", "imageNames", "typeToIdentify", "responseIndex", "emotion"]
+    for rParam in requiredParameters:
+        if not(rParam in request.args):
+            print(f"Missing param '{rParam}'")
+            response = flask.jsonify({"body": f"Missing param '{rParam}'"})
+            response.headers.add("Access-Control-Allow-Origin", "*")
+            return response, 400
     try:
         modelName = str(request.form.getlist('modelName')[0])
         imageNames = json.loads(request.form.getlist('imageNames')[0])
