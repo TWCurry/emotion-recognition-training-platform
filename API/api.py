@@ -34,7 +34,7 @@ def infer():
     if(len(faces)) == 0:
         print("No faces found.")
         response = flask.jsonify({"body": "No faces found."})
-        return response, 201
+        return response, 200
 
     for (x, y, w, h) in faces:
         # Capture image of face, resize to 48x48
