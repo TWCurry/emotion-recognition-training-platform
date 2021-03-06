@@ -15,13 +15,25 @@ app = Flask(__name__)
 
 @app.route("/uploadImage", methods=["POST"])
 def infer():
-    imageData = str(request.form.getlist('imageData')[0])
+    try:
+        imageData = str(request.form.getlist('imageData')[0])
+    except Exception as e:
+        print(e)
+        response = flask.jsonify({"body": "Missing imageData."})
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        return response, 400
     print("Loading image...")
-    imageData = unquote(imageData) # Url decode body
-    imageData = imageData.split(",")[1] # Remove b64 header
-    imageData = base64.b64decode(imageData) # decode base64 to bytes
-    nparr = np.frombuffer(imageData, np.uint8) # Load image into numpy array
-    img = cv2.imdecode(nparr, 0) # Convert to grayscale cv2 image
+    try:
+        imageData = unquote(imageData) # Url decode body
+        imageData = imageData.split(",")[1] # Remove b64 header
+        imageData = base64.b64decode(imageData) # decode base64 to bytes
+        nparr = np.frombuffer(imageData, np.uint8) # Load image into numpy array
+        img = cv2.imdecode(nparr, 0) # Convert to grayscale cv2 image
+    except Exception as e:
+        response = flask.jsonify({"body": f"Image data error - {e}"})
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        return response, 400
+
     imgArr = np.zeros((48,48)) # Empty array, will store the image data
 
     # Load Haar-Cascade
