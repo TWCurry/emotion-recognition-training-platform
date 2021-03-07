@@ -122,10 +122,10 @@ def storeTrainingData():
         response.headers.add("Access-Control-Allow-Origin", "*")
         return response, 400
     
-    # Check that the response is a valid integer
+    # Check that the response is a valid positive integer
     try:
         responseIndex = int(responseIndex)
-        if responseIndex > 0 or responseIndex > 1:
+        if responseIndex < 0 or responseIndex > 1:
             print(f"Invalid response index")
             response = flask.jsonify({"body": f"Invalid response index {responseIndex}"})
             response.headers.add("Access-Control-Allow-Origin", "*")
