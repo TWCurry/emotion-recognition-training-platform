@@ -123,6 +123,12 @@ def storeTrainingData():
         response = flask.jsonify({"body": f"Invalid emotion {emotion}"})
         response.headers.add("Access-Control-Allow-Origin", "*")
         return response, 400
+    
+    if len(imageNames != 2):
+        print(f"Incorrect number of image names")
+        response = flask.jsonify({"body": f"Invalid number of image names ({len(imageNames)} found, should be 2)"})
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        return response, 400
 
     try:
         # Instantiate Firebase connection
