@@ -1,0 +1,93 @@
+{
+    "config":{
+        "ferApiUrl": "http://34.122.186.153:5000",
+        "externalApiUrl": "http://35.223.63.52:5000" 
+    },
+    "tests": [
+        {
+            "name": "Upload Training Details Happy Path",
+            "url": "ferApiUrl",
+            "path": "/uploadTrainingDetails",
+            "method": "post",
+            "params": {},
+            "body": {
+                "emotion": "Happy",
+                "imageNames": "[\"legoDataset/3040/201706162106-0223.png\",\"legoDataset/3022/201706161906-0051.png\"]",
+                "modelName": "legoAI",
+                "responseIndex": "0",
+                "typeToIdentify": "3040"
+            },
+            "expectedResponseCodes": ["200"]
+        },
+        {
+            "name": "Upload Training Details Missing Emotion",
+            "url": "ferApiUrl",
+            "path": "/uploadTrainingDetails",
+            "method": "post",
+            "params": {},
+            "body": {
+                "imageNames": "[\"legoDataset/3040/201706162106-0223.png\",\"legoDataset/3022/201706161906-0051.png\"]",
+                "modelName": "legoAI",
+                "responseIndex": "0",
+                "typeToIdentify": "3040"
+            },
+            "expectedResponseCodes": ["400"]
+        },
+        {
+            "name": "Upload Training Details Missing Image Names",
+            "url": "ferApiUrl",
+            "path": "/uploadTrainingDetails",
+            "method": "post",
+            "params": {},
+            "body": {
+                "emotion": "Happy",
+                "modelName": "legoAI",
+                "responseIndex": "0",
+                "typeToIdentify": "3040"
+            },
+            "expectedResponseCodes": ["400"]
+        },
+        {
+            "name": "Upload Training Details Missing Model Name",
+            "url": "ferApiUrl",
+            "path": "/uploadTrainingDetails",
+            "method": "post",
+            "params": {},
+            "body": {
+                "emotion": "Happy",
+                "imageNames": "[\"legoDataset/3040/201706162106-0223.png\",\"legoDataset/3022/201706161906-0051.png\"]",
+                "responseIndex": "0",
+                "typeToIdentify": "3040"
+            },
+            "expectedResponseCodes": ["400"]
+        },
+        {
+            "name": "Upload Training Details Missing Response Index",
+            "url": "ferApiUrl",
+            "path": "/uploadTrainingDetails",
+            "method": "post",
+            "params": {},
+            "body": {
+                "emotion": "Happy",
+                "imageNames": "[\"legoDataset/3040/201706162106-0223.png\",\"legoDataset/3022/201706161906-0051.png\"]",
+                "modelName": "legoAI",
+                "typeToIdentify": "3040"
+            },
+            "expectedResponseCodes": ["400"]
+        },
+        {
+            "name": "Upload Training Details Missing Type To Identify",
+            "url": "ferApiUrl",
+            "path": "/uploadTrainingDetails",
+            "method": "post",
+            "params": {},
+            "body": {
+                "emotion": "Happy",
+                "imageNames": "[\"legoDataset/3040/201706162106-0223.png\",\"legoDataset/3022/201706161906-0051.png\"]",
+                "modelName": "legoAI",
+                "responseIndex": "0"
+            },
+            "expectedResponseCodes": ["400"]
+        }
+    ]
+}
