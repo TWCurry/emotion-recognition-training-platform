@@ -3,7 +3,6 @@ from colorama import init, Fore, Style
 
 configVars = {}
 
-
 def main():
     init(convert=True) # Initialise colorama
     passedTests = 0
@@ -66,11 +65,15 @@ def performTest(testData):
         recordFailedTest(testData, "", e)
         return
     statusCode = r.status_code
+    try:
+        responseJson = r.json()
+    except: # If no json response use text
+        responseJson = r.text
     if str(statusCode) in expectedResponseCodes:
-        recordSuccessfulTest(testData, statusCode, r.json())
+        recordSuccessfulTest(testData, statusCode, responseJson)
         return True
     else:
-        recordFailedTest(testData, statusCode, r.json())
+        recordFailedTest(testData, statusCode, responseJson)
         return False
 
 def recordFailedTest(testData, statusCode, response):

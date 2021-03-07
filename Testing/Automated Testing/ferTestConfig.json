@@ -19,6 +19,21 @@
             "expectedResponseCodes": ["200"]
         },
         {
+            "name": "Upload Training Details Incorrect Method",
+            "url": "ferApiUrl",
+            "path": "/uploadTrainingDetails",
+            "method": "get",
+            "params": {},
+            "body": {
+                "emotion": "Happy",
+                "imageNames": "[\"legoDataset/3040/201706162106-0223.png\",\"legoDataset/3022/201706161906-0051.png\"]",
+                "modelName": "legoAI",
+                "responseIndex": "0",
+                "typeToIdentify": "3040"
+            },
+            "expectedResponseCodes": ["405"]
+        },
+        {
             "name": "Upload Training Details Emotion Happy",
             "url": "ferApiUrl",
             "path": "/uploadTrainingDetails",
