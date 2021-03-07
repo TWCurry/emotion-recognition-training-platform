@@ -80,7 +80,7 @@ def recordFailedTest(testData, statusCode, response):
     print(f"Method: {Fore.BLUE}{testData['method'].upper()}{Style.RESET_ALL}")
     print(f"Expected response codes: {testData['expectedResponseCodes']}")
     print(f"Received reponse code: {Fore.YELLOW}{statusCode}{Style.RESET_ALL}")
-    print(f"Reponse: {response}")
+    print(f"Response: {response}")
 
 def recordSuccessfulTest(testData, statusCode, response):
     print("======================================")
@@ -91,7 +91,7 @@ def recordSuccessfulTest(testData, statusCode, response):
     print(f"Received reponse code: {Fore.GREEN}{statusCode}{Style.RESET_ALL}")
     if len(str(response)) > 500:
         response = str(response)[:500]+f"{Fore.GREEN}(truncated){Style.RESET_ALL}"
-    print(f"Reponse: {response}")
+    print(f"Response: {response}")
 
 # For tests that were incorrectly specified:
 def recordInvalidTest(testData, reason):
