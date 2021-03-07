@@ -297,6 +297,66 @@
                 "responseIndex": "0"
             },
             "expectedResponseCodes": ["400"]
+        },
+        {
+            "name": "Upload Training Details Missing E+I",
+            "url": "ferApiUrl",
+            "path": "/uploadTrainingDetails",
+            "method": "post",
+            "params": {},
+            "body": {
+                "modelName": "legoAI",
+                "responseIndex": "0",
+                "typeToIdentify": "3040"
+            },
+            "expectedResponseCodes": ["400"]
+        },
+        {
+            "name": "Upload Training Details Missing I+M",
+            "url": "ferApiUrl",
+            "path": "/uploadTrainingDetails",
+            "method": "post",
+            "params": {},
+            "body": {
+                "emotion": "Happy",
+                "responseIndex": "0",
+                "typeToIdentify": "3040"
+            },
+            "expectedResponseCodes": ["400"]
+        },
+        {
+            "name": "Upload Training Details Missing M+R",
+            "url": "ferApiUrl",
+            "path": "/uploadTrainingDetails",
+            "method": "post",
+            "params": {},
+            "body": {
+                "emotion": "Happy",
+                "imageNames": "[\"legoDataset/3040/201706162106-0223.png\",\"legoDataset/3022/201706161906-0051.png\"]",
+                "typeToIdentify": "3040"
+            },
+            "expectedResponseCodes": ["400"]
+        },
+        {
+            "name": "Upload Training Details Missing R+T",
+            "url": "ferApiUrl",
+            "path": "/uploadTrainingDetails",
+            "method": "post",
+            "params": {},
+            "body": {
+                "emotion": "Happy",
+                "imageNames": "[\"legoDataset/3040/201706162106-0223.png\",\"legoDataset/3022/201706161906-0051.png\"]",
+                "modelName": "legoAI"
+            },
+            "expectedResponseCodes": ["400"]
+        },{
+            "name": "Upload Training Details Missing Body",
+            "url": "ferApiUrl",
+            "path": "/uploadTrainingDetails",
+            "method": "post",
+            "params": {},
+            "body": {},
+            "expectedResponseCodes": ["400"]
         }
     ]
 }
