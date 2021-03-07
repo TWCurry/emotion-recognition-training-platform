@@ -117,6 +117,12 @@ def storeTrainingData():
         response = flask.jsonify({"body": "Invalid parameters"})
         response.headers.add("Access-Control-Allow-Origin", "*")
         return response, 400
+    
+    if not(emotion in emotionNames):
+        print(f"Invalid emotion {emotion}")
+        response = flask.jsonify({"body": f"Invalid emotion {emotion}"})
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        return response, 400
 
     try:
         # Instantiate Firebase connection
