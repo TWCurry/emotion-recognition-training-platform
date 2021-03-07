@@ -35,11 +35,11 @@ def main():
     print(f"Successful tests: {Fore.GREEN}{passedTests}{Style.RESET_ALL}")
     print(f"Failed tests: {Fore.RED}{failedTests}{Style.RESET_ALL}")
     if successRate < 0.5:
-        print(f"Success rate: {Fore.RED}{successRate*100}%{Style.RESET_ALL}")
+        print(f"Success rate: {Fore.RED}{round(successRate*100, 2)}%{Style.RESET_ALL}")
     elif successRate >= 0.5 and successRate <= 0.8:
-        print(f"Success rate: {Fore.YELLOW}{successRate*100}%{Style.RESET_ALL}")
+        print(f"Success rate: {Fore.YELLOW}{round(successRate*100, 2)}%{Style.RESET_ALL}")
     else:
-        print(f"Success rate: {Fore.GREEN}{successRate*100}%{Style.RESET_ALL}")
+        print(f"Success rate: {Fore.GREEN}{round(successRate*100, 2)}%{Style.RESET_ALL}")
 
 def performTest(testData):
     # Required parameters
@@ -89,6 +89,8 @@ def recordSuccessfulTest(testData, statusCode, response):
     print(f"Method: {Fore.BLUE}{testData['method'].upper()}{Style.RESET_ALL}")
     print(f"Expected response codes: {testData['expectedResponseCodes']}")
     print(f"Received reponse code: {Fore.GREEN}{statusCode}{Style.RESET_ALL}")
+    if len(str(response)) > 500:
+        response = str(response)[:500]+f"{Fore.GREEN}(truncated){Style.RESET_ALL}"
     print(f"Reponse: {response}")
 
 # For tests that were incorrectly specified:
@@ -97,7 +99,7 @@ def recordInvalidTest(testData, reason):
     print(f"{Fore.RED}FAILED{Style.RESET_ALL}")
     print(f"Test {Fore.GREEN}\"{testData['name']}\"{Style.RESET_ALL}")
     print(f"Method: {Fore.BLUE}{testData['method'].upper()}{Style.RESET_ALL}")
-    print(f"Invalid test. {reason}")
+    print(f"Test config error. {reason}")
 
 def readConfig(configPath):
     f = open(configPath, "r")
