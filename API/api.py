@@ -48,6 +48,7 @@ def infer():
     if(len(faces)) == 0:
         print("No faces found.")
         response = flask.jsonify({"body": "No faces found"})
+        response.headers.add("Access-Control-Allow-Origin", "*")
         return response, 200
 
     for (x, y, w, h) in faces:
