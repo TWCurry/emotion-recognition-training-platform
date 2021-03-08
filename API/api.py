@@ -15,15 +15,9 @@ app = Flask(__name__)
 
 @app.route("/uploadImage", methods=["POST"])
 def infer():
-    if "imageData" in request.args:
-        imageData = str(request.form.getlist('imageData')[0])
-    else:
-        print("Missing imageData")
-        response = flask.jsonify({"body": "Missing imageData."})
-        response.headers.add("Access-Control-Allow-Origin", "*")
-        return response, 400
     print("Loading image...")
     try:
+        imageData = str(request.form.getlist('imageData')[0])
         imageData = unquote(imageData) # Url decode body
         imageData = imageData.split(",")[1] # Remove b64 header
         imageData = base64.b64decode(imageData) # decode base64 to bytes
