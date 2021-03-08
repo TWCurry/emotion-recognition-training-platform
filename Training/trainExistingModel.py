@@ -10,10 +10,10 @@ imgHeight = 48
 imgWidth = 48
 emotionCodes = ["AN", "DI", "FE", "HA", "SA", "SU", "NE"]
 
+
 def main():
     try:
-        dataSetPath = sys.argv[1]
-        outputModelDirectory = sys.argv[2]
+        modelDirectory = sys.argv[1]
     except Exception as e:
         print("Invalid parameters.")
         sys.exit(1)
@@ -66,27 +66,7 @@ def main():
         layers.experimental.preprocessing.RandomZoom(0.2),
     ])
 
-    # Create model (model shape and size to be investigated, maybe improved)
-    model = keras.Sequential([
-        augmentedData,
-        layers.ZeroPadding2D((1, 1), input_shape=(48,48,1)),
-        layers.Convolution2D(32, 3, 3, activation='relu'),
-        layers.ZeroPadding2D((1,1)),
-        layers.Convolution2D(64, 3, 3, activation='relu'),
-        layers.ZeroPadding2D((1,1)),
-        layers.Convolution2D(128, 3, 3, activation='relu'),
-        layers.ZeroPadding2D((1,1)),
-        layers.Convolution2D(256, 3, 3, activation='relu'),
-        layers.ZeroPadding2D((1,1)),
-        layers.Convolution2D(512, 3, 3, activation='relu'),
-        layers.ZeroPadding2D((1,1)),
-        layers.Flatten(),
-        layers.Dense(1024, activation='relu'),
-        layers.Dropout(0.4),
-        layers.Dense(2048, activation='relu'),
-        layers.Dropout(0.5),
-        layers.Dense(7, activation='softmax')
-    ])
+    model = keras.models.load_model(modelDirectory)
 
     # Compile model
     model.compile(
@@ -100,7 +80,7 @@ def main():
     # Add callbacks
     cbLrReducer = ReduceLROnPlateau(monitor='val_loss', factor=0.9, patience=3, verbose=1) # Reduce learning rate if there is no improvement on the value of the loss function
     cbEarlyStopper = EarlyStopping(monitor='val_loss', min_delta=0, patience=8, verbose=1, mode='auto') # Stop training the model if it's overfitting
-    cbCheckpoint = ModelCheckpoint(outputModelDirectory, monitor='val_accuracy', verbose=1, save_best_only=True) # Save model at the end of the epoch (if there's an improvement on the previous epoch's accuracy)
+    cbCheckpoint = ModelCheckpoint(modelDirectory, monitor='val_accuracy', verbose=1, save_best_only=True) # Save model at the end of the epoch (if there's an improvement on the previous epoch's accuracy)
 
     # Train model
     epochs=30
@@ -115,7 +95,7 @@ def main():
     scores = model.evaluate(np.array(validationData), np.array(validationLabels), batch_size=batchSize)
     print(f"Loss: {scores[0]}")
     print(f"Accuracy: {int(scores[1])*100}%")
-    model.save(outputModelDirectory)
+    model.save(modelDirectory)
     
 
 if __name__ == "__main__":
