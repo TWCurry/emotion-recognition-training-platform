@@ -3,6 +3,9 @@ import tensorflow as tf
 import numpy as np
 from tensorflow import keras
 from tensorflow.keras import layers
+from keras.models import Sequential, load_model
+from keras.layers import Conv2D, MaxPooling2D, Dense, Activation, Dropout, Flatten, BatchNormalization
+from keras.initializers import  RandomNormal
 from tensorflow.keras.callbacks import ReduceLROnPlateau, TensorBoard, EarlyStopping, ModelCheckpoint
 
 batchSize = 50
@@ -62,31 +65,47 @@ def main():
     # Create augmented data
     augmentedData = keras.Sequential([
         layers.experimental.preprocessing.RandomFlip("horizontal", input_shape=(imgHeight, imgWidth, 1)),
-        layers.experimental.preprocessing.RandomRotation(0.2),
-        layers.experimental.preprocessing.RandomZoom(0.2),
+        layers.experimental.preprocessing.RandomRotation(0.5),
+        layers.experimental.preprocessing.RandomZoom(0.5),
     ])
 
     # Create model (model shape and size to be investigated, maybe improved)
-    model = keras.Sequential([
-        augmentedData,
-        layers.ZeroPadding2D((1, 1), input_shape=(48,48,1)),
-        layers.Convolution2D(32, 3, 3, activation='relu'),
-        layers.ZeroPadding2D((1,1)),
-        layers.Convolution2D(64, 3, 3, activation='relu'),
-        layers.ZeroPadding2D((1,1)),
-        layers.Convolution2D(128, 3, 3, activation='relu'),
-        layers.ZeroPadding2D((1,1)),
-        layers.Convolution2D(256, 3, 3, activation='relu'),
-        layers.ZeroPadding2D((1,1)),
-        layers.Convolution2D(512, 3, 3, activation='relu'),
-        layers.ZeroPadding2D((1,1)),
-        layers.Flatten(),
-        layers.Dense(1024, activation='relu'),
-        layers.Dropout(0.4),
-        layers.Dense(2048, activation='relu'),
-        layers.Dropout(0.5),
-        layers.Dense(7, activation='softmax')
-    ])
+    model = Sequential()
+
+    # 1st convolution layer
+    model.add(Conv2D(64, (3, 3), activation='relu', padding = 'same', input_shape=(48,48,1), bias_initializer=RandomNormal(stddev=1), kernel_initializer=RandomNormal(stddev=1)))
+    model.add(Conv2D(64, (3, 3), activation='relu', padding = 'same', input_shape=(48,48,1), bias_initializer=RandomNormal(stddev=1), kernel_initializer=RandomNormal(stddev=1)))
+    model.add(BatchNormalization())
+    model.add(MaxPooling2D(pool_size=(3,3), strides=(2, 2)))
+    model.add(Dropout(0.25))
+
+    # 3rd convolution layer
+    model.add(Conv2D(64, (3, 3), activation='relu', padding = 'same', bias_initializer=RandomNormal(stddev=1), kernel_initializer=RandomNormal(stddev=1)))
+    model.add(Conv2D(64, (3, 3), activation='relu', padding = 'same', bias_initializer=RandomNormal(stddev=1), kernel_initializer=RandomNormal(stddev=1)))
+    model.add(BatchNormalization())
+    model.add(MaxPooling2D(pool_size=(3,3), strides=(2, 2)))
+    model.add(Dropout(0.25))
+            
+    # 5th convolution layer
+    model.add(Conv2D(128, (3, 3), activation='relu', padding = 'same', bias_initializer=RandomNormal(stddev=1), kernel_initializer=RandomNormal(stddev=1)))
+    model.add(Conv2D(128, (3, 3), activation='relu', padding = 'same', bias_initializer=RandomNormal(stddev=1), kernel_initializer=RandomNormal(stddev=1)))
+    model.add(BatchNormalization())
+    model.add(MaxPooling2D(pool_size=(3,3), strides=(2, 2)))
+    model.add(Dropout(0.25))
+
+    # 7th convolution layer
+    model.add(Conv2D(256, (3, 3), activation='relu', padding = 'same', bias_initializer=RandomNormal(stddev=1), kernel_initializer=RandomNormal(stddev=1)))
+    model.add(Conv2D(256, (3, 3), activation='relu', padding = 'same', bias_initializer=RandomNormal(stddev=1), kernel_initializer=RandomNormal(stddev=1)))
+    model.add(BatchNormalization())
+    model.add(MaxPooling2D(pool_size=(3,3), strides=(2, 2)))
+    model.add(Dropout(0.5))
+
+
+    model.add(Flatten())
+    # Fully connected layers
+    model.add(Dense(2048, activation='relu'))
+    model.add(Dropout(0.5))
+    model.add(Dense(7, activation='softmax'))
 
     # Compile model
     model.compile(

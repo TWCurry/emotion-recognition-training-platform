@@ -13,7 +13,8 @@ emotionCodes = ["AN", "DI", "FE", "HA", "SA", "SU", "NE"]
 
 def main():
     try:
-        modelDirectory = sys.argv[1]
+        dataSetPath = sys.argv[1]
+        outputModelDirectory = sys.argv[2]
     except Exception as e:
         print("Invalid parameters.")
         sys.exit(1)
@@ -66,7 +67,7 @@ def main():
         layers.experimental.preprocessing.RandomZoom(0.2),
     ])
 
-    model = keras.models.load_model(modelDirectory)
+    model = keras.models.load_model(outputModelDirectory)
 
     # Compile model
     model.compile(
@@ -80,7 +81,7 @@ def main():
     # Add callbacks
     cbLrReducer = ReduceLROnPlateau(monitor='val_loss', factor=0.9, patience=3, verbose=1) # Reduce learning rate if there is no improvement on the value of the loss function
     cbEarlyStopper = EarlyStopping(monitor='val_loss', min_delta=0, patience=8, verbose=1, mode='auto') # Stop training the model if it's overfitting
-    cbCheckpoint = ModelCheckpoint(modelDirectory, monitor='val_accuracy', verbose=1, save_best_only=True) # Save model at the end of the epoch (if there's an improvement on the previous epoch's accuracy)
+    cbCheckpoint = ModelCheckpoint(outputModelDirectory, monitor='val_accuracy', verbose=1, save_best_only=True) # Save model at the end of the epoch (if there's an improvement on the previous epoch's accuracy)
 
     # Train model
     epochs=30
@@ -95,7 +96,7 @@ def main():
     scores = model.evaluate(np.array(validationData), np.array(validationLabels), batch_size=batchSize)
     print(f"Loss: {scores[0]}")
     print(f"Accuracy: {int(scores[1])*100}%")
-    model.save(modelDirectory)
+    model.save(outputModelDirectory)
     
 
 if __name__ == "__main__":
