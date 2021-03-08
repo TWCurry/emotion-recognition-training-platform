@@ -364,13 +364,23 @@
                 "modelName": "legoAI"
             },
             "expectedResponseCodes": ["400"]
-        },{
+        },
+        {
             "name": "Upload Training Details Missing Body",
             "url": "ferApiUrl",
             "path": "/uploadTrainingDetails",
             "method": "post",
             "params": {},
             "body": {},
+            "expectedResponseCodes": ["400"]
+        },
+        {
+            "name": "Upload Image Data",
+            "url": "ferApiUrl",
+            "path": "/uploadImage",
+            "method": "post",
+            "params": {},
+            "body": {"imageData": "test"},
             "expectedResponseCodes": ["400"]
         }
     ]
