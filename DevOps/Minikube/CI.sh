@@ -4,10 +4,9 @@
 # Take branch name and tag as parameters
 branch=$1
 tag=$2
-modelName=$3
-if [ $# -ne 3 ]
+if [ $# -ne 2 ]
   then
-    echo "Incorrect parameters. Usage: bash CI.sh branchName imageTag modelFileName"
+    echo "Incorrect parameters. Usage: bash CI.sh branchName imageTag"
     exit 1
 fi
 
@@ -17,24 +16,24 @@ cd emotion-recognition-training-platform
 git checkout $branch
 
 # Fetch model from GCP Storage
-gsutil cp gs://tc-fer-application-models/$modelName API/model.tflite
+cp ../model.tflite API/model.tflite
 
 # Copy Dockerfile from DevOps dir to root of repo
-cp DevOps/Dockerfile Dockerfile
+cp DevOps/Minikube/Dockerfile Dockerfile
 
 # Build image
-sudo docker build -t fer-api:$tag .
+docker build -t fer-api:$tag .
 
 # Tag image
-sudo docker tag fer-api:$tag eu.gcr.io/majestic-hybrid-301217/fer-api:$tag
+docker tag fer-api:$tag localhost:5001/fer-api:$tag
 
 # Push image to registry
-sudo docker push eu.gcr.io/majestic-hybrid-301217/fer-api:$tag
+docker push localhost:5001/fer-api:$tag
 
 # Remove locally cached images
-sudo docker image remove fer-api:$tag
-sudo docker image remove eu.gcr.io/majestic-hybrid-301217/fer-api:$tag
-sudo docker image remove python
+docker image remove fer-api:$tag
+docker image remove localhost:5001/fer-api:$tag
+docker image remove python
 
 # Remove git repo
 cd ../
