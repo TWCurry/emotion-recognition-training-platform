@@ -5,7 +5,7 @@ from flask import Flask, request
 from urllib.parse import unquote
 import tflite_runtime.interpreter as tflite
 
-autoTrainingApiUrl = "http://127.0.0.1:5003"
+autoTrainingApiUrl = "http://127.0.0.1:5003/trainModel"
 emotionNames = ["Afraid", "Angry", "Disgusted", "Happy", "Neutral", "Sad", "Surprised"]
 
 # Initialisation
