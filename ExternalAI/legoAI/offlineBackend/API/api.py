@@ -53,12 +53,8 @@ def identifyBrickType():
     for i in range(len(imageNames)):
         npArr = np.zeros((200,200))
         print(imageNames[i])
-        blob = bucket.blob(imageNames[i])
-        fileName = imageNames[i].split("/")[-1]
-        fileNames.append(fileName)
-        blob.download_to_filename(fileName)
 
-        img = keras.preprocessing.image.load_img(fileName)
+        img = keras.preprocessing.image.load_img(imageNames[i])
         imgArr = keras.preprocessing.image.img_to_array(img)
         imgArr = np.array([imgArr])
 
@@ -70,12 +66,6 @@ def identifyBrickType():
         # If current image contains chosen brick type:
         if classType == typeToIdentify:
             indicesContainingImage.append(i)
-
-    for file in fileNames:
-        try:
-            os.remove(file)
-        except:
-            print(f"Warning - could not delete file {file}.")
 
     response = flask.jsonify({"body": indicesContainingImage})
     response.headers.add("Access-Control-Allow-Origin", "*")
