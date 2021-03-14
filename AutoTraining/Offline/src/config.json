@@ -1,0 +1,13 @@
+{    
+    "customerModels": [
+        {   
+            "modelName": "legoAI",
+            "modelPath": "../../../ExternalAI/offlineBackend/API/model",
+            "datasetPath": "../../../ExternalAI/offlineBackend/API/",
+            "classNames": ["11214", "18651", "2357", "3003", "3004", "3005", "3022", "3023", "3024", "3040", "3069", "32123", "3673", "3713", "3794", "6632"],
+            "numClasses": "16",
+            "imageDimensions": ["200", "200"],
+            "colourChannels": "3"
+        }
+    ]
+}

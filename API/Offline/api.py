@@ -1,10 +1,11 @@
-import base64, cv2, json, flask, time
+import base64, cv2, json, flask, requests
 import numpy as np
 # from PIL import Image
 from flask import Flask, request
 from urllib.parse import unquote
 import tflite_runtime.interpreter as tflite
 
+autoTrainingApiUrl = "http://127.0.0.1:5003"
 emotionNames = ["Afraid", "Angry", "Disgusted", "Happy", "Neutral", "Sad", "Surprised"]
 
 # Initialisation
@@ -131,41 +132,20 @@ def storeTrainingData():
     responseIndex = str(responseIndex)
 
     try:
-        # Instantiate Firebase connection
-        db = firestore.Client()
-
-        # Create string to format image names for DB write
-        imageNameStr = ""
-        for image in imageNames:
-            imageNameStr += image+","
-        imageNameStr = imageNameStr[:-1]
-
-        # Write training data to DB
-        timestamp = int(time.time())
-        document = db.collection("inferenceData").document(f"{timestamp}")
-        doc = {
+        params = {
             "modelName": modelName,
-            "imageNames": imageNameStr,
+            "imageNames": imageNames,
             "typeToIdentify": typeToIdentify,
             "responseIndex": responseIndex,
-            "emotion": emotion
+            "emotion": responseIndex
         }
-        # Write to Firestore
-        document.set(doc)
+        r = requests.post(autoTrainingApiUrl, params=params)
     except Exception as e:
-        print(f"Could not write to Firestore - {e}")
-        response = flask.jsonify({"body": f"Error storing training details"})
+        print(f"Could not train model - {e}")
+        response = flask.jsonify({"body": f"Could not train model - {e}"})
         response.headers.add("Access-Control-Allow-Origin", "*")
         return response, 500
 
-    try:
-        # Write to Elasticsearch
-        res = es.index(index="test-index", body=doc)
-    except Exception as e:
-        print(f"Could not write to Elasticsearch - {e}")
-        response = flask.jsonify({"body": f"Error storing training details"})
-        response.headers.add("Access-Control-Allow-Origin", "*")
-        return response, 500
 
     response = flask.jsonify({"body": "Successfully written to db"})
     response.headers.add("Access-Control-Allow-Origin", "*")

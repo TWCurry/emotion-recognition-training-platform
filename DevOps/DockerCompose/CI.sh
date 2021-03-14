@@ -16,7 +16,7 @@ cd emotion-recognition-training-platform
 git checkout $branch
 
 # Fetch model from GCP Storage
-cp ../model.tflite API/model.tflite
+cp ../model.tflite API/Offline/model.tflite
 
 # Copy Dockerfile from DevOps dir to root of repo
 cp DevOps/DockerCompose/Dockerfile Dockerfile
