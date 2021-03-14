@@ -6,6 +6,7 @@ from urllib.parse import unquote
 import tflite_runtime.interpreter as tflite
 
 autoTrainingApiUrl = "http://127.0.0.1:5001/trainModel"
+metricApiUrl = "http://127.0.0.1:5002"
 emotionNames = ["Afraid", "Angry", "Disgusted", "Happy", "Neutral", "Sad", "Surprised"]
 
 # Initialisation
@@ -145,6 +146,16 @@ def storeTrainingData():
     except Exception as e:
         print(f"Could not train model - {e}")
         response = flask.jsonify({"body": f"Could not train model - {e}"})
+        response.headers.add("Access-Control-Allow-Origin", "*")
+        return response, 500
+
+    try:
+        r = requests.post(f"{metricApiUrl}/logMetric", data=params)
+        if r.status_code < 200 or r.status_code > 299:
+            raise Exception(f"{r.json()}")
+    except Exception as e:
+        print(f"Could not write to metrics file - {e}")
+        response = flask.jsonify({"body": f"Could not write metric - {e}"})
         response.headers.add("Access-Control-Allow-Origin", "*")
         return response, 500
 
