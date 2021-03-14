@@ -5,7 +5,7 @@ from flask import Flask, request
 from urllib.parse import unquote
 import tflite_runtime.interpreter as tflite
 
-autoTrainingApiUrl = "http://127.0.0.1:5003/trainModel"
+autoTrainingApiUrl = "http://127.0.0.1:5001/trainModel"
 emotionNames = ["Afraid", "Angry", "Disgusted", "Happy", "Neutral", "Sad", "Surprised"]
 
 # Initialisation
@@ -133,13 +133,15 @@ def storeTrainingData():
 
     try:
         params = {
-            "modelName": modelName,
-            "imageNames": imageNames,
-            "typeToIdentify": typeToIdentify,
-            "responseIndex": responseIndex,
-            "emotion": responseIndex
+            "modelName": request.form.getlist('modelName')[0],
+            "imageNames": request.form.getlist('imageNames')[0],
+            "typeToIdentify": request.form.getlist('typeToIdentify')[0],
+            "responseIndex": request.form.getlist('responseIndex')[0],
+            "emotion": request.form.getlist('emotion')[0]
         }
-        r = requests.post(autoTrainingApiUrl, params=params)
+        r = requests.post(autoTrainingApiUrl, data=params)
+        if r.status_code < 200 or r.status_code > 299:
+            raise Exception(f"({r.status_code}) {r.json()}")
     except Exception as e:
         print(f"Could not train model - {e}")
         response = flask.jsonify({"body": f"Could not train model - {e}"})
@@ -147,7 +149,7 @@ def storeTrainingData():
         return response, 500
 
 
-    response = flask.jsonify({"body": "Successfully written to db"})
+    response = flask.jsonify({"body": "Successfully trained model"})
     response.headers.add("Access-Control-Allow-Origin", "*")
     return response, 200
 

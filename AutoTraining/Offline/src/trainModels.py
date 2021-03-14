@@ -37,7 +37,7 @@ def trainModel():
         emotion = str(request.form.getlist('emotion')[0])
     except Exception as e:
         print(f"Failed to get parameters - {e}")
-        response = flask.jsonify({"body": "Invalid parameters"})
+        response = flask.jsonify({"body": f"Invalid parameters - {e}"})
         response.headers.add("Access-Control-Allow-Origin", "*")
         return response, 400
 
@@ -51,6 +51,10 @@ def trainModel():
     else:
         print(f"Invalid emotion {emotion}.")
         sys.exit(1)
+
+    response = flask.jsonify({"body": f"Training succeeded"})
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response, 200
 
 def generateTrainingData(configData, modelName, responseIndex, typeToIdentify, imageNames):
     # Identify model config data
@@ -71,14 +75,15 @@ def generateTrainingData(configData, modelName, responseIndex, typeToIdentify, i
 
     # Fetch training image
     print("Downloading new training image...")
-    fileType = imageNames[responseIndex].split(".")[-1]
-    f = open(f"{modelConfig['datasetPath']}/{imageNames[responseIndex]}", "rb")
+    responseIndex = int(responseIndex)
+    imagePath = f"{modelConfig['datasetPath']}{imageNames[responseIndex]}"
+    f = open(imagePath, "rb")
     f.read()
     f.close()
 
     # Load image
     print("Loading new training image...")
-    im = cv2.imread(f"image.{fileType}")
+    im = cv2.imread(imagePath)
     trainingData = []
     trainingLabels = []
     trainingData.append(np.array(im))
@@ -112,11 +117,8 @@ def generateTrainingData(configData, modelName, responseIndex, typeToIdentify, i
 
     # Save model
     print("Saving model...")
-    model.save(f"{modelConfig['modelPath']}")
-    shutil.make_archive(f"{modelConfig['modelName']}-out", 'zip', f"{modelConfig['modelName']}-out") # Zip directory
+    model.save(modelConfig['modelPath'])
 
-    # Remove training image
-    os.remove(f"image.{fileType}")
 
 if __name__ == "__main__":
-    app.run(port=5003)
+    app.run(port=5001)
