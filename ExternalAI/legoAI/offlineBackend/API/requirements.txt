@@ -1,6 +1,5 @@
 opencv-python
 flask
 numpy
-google-cloud-storage
 Pillow
 tensorflow

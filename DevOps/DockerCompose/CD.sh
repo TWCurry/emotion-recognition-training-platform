@@ -15,7 +15,7 @@ services:
   flask-app:
     image: localhost:5001/fer-api:${tag}
     ports:
-      - \"5000:5000\"
+      - \"5002:5000\"
 """ > docker-compose.yml
 docker-compose up -d
 rm docker-compose.yml
