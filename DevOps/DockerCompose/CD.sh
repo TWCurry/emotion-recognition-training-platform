@@ -13,9 +13,9 @@ cd ../
 echo -e """version: \"3.8\"
 services:
   flask-app:
-    image: eu.gcr.io/majestic-hybrid-301217/fer-api:${tag}
+    image: localhost:5001/fer-api:${tag}
     ports:
       - \"5000:5000\"
 """ > docker-compose.yml
-sudo docker-compose up -d
+docker-compose up -d
 rm docker-compose.yml

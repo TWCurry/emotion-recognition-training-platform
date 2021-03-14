@@ -19,7 +19,7 @@ git checkout $branch
 cp ../model.tflite API/model.tflite
 
 # Copy Dockerfile from DevOps dir to root of repo
-cp DevOps/Minikube/Dockerfile Dockerfile
+cp DevOps/DockerCompose/Dockerfile Dockerfile
 
 # Build image
 docker build -t fer-api:$tag .

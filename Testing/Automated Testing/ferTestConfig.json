@@ -1,6 +1,6 @@
 {
     "config":{
-        "ferApiUrl": "http://34.122.186.153:5000"
+        "ferApiUrl": "http://localhost:5000"
     },
     "tests": [
         {
