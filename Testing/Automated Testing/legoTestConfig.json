@@ -1,6 +1,6 @@
 {
     "config":{
-        "legoApiUrl": "http://35.223.63.52:5000"
+        "legoApiUrl": "http://localhost:5002"
     },
     "tests": [
         {
