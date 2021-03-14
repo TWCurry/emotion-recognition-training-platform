@@ -1,0 +1,35 @@
+<!-- Basic website to send images to test APIs -->
+<html>
+    <head>
+        <title>Send camera image</title>
+        <!-- Include jQuery -->
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+        <!-- Include webcamJs -->
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/webcamjs/1.0.25/webcam.js"></script>
+    </head>
+    <body>
+        <div id="camera" style="height:auto;width:auto; text-align:left;"></div>
+        <button id="btnShutter" onclick="takeSnapShot()">Capture</button>
+        <div id="output"></div>
+    </body>
+    <script>
+        Webcam.set({
+            width: 220,
+            height: 190,
+            image_format: 'jpeg',
+            jpeg_quality: 100
+        });
+        Webcam.attach('#camera');
+        
+        takeSnapShot = function () {
+            Webcam.snap(function (data) {
+                console.log(data)
+                document.getElementById('output').innerHTML = '<img src="' + data + '" width="70px" height="50px" />';
+                params = {"imageData": data};
+                $.post("http://35.190.172.118:5000/uploadImage", params, function(resp) {
+                    console.log(resp);
+                })
+            });
+        }
+    </script>
+</html>
