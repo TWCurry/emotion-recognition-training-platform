@@ -3,11 +3,8 @@ import numpy as np
 # from PIL import Image
 from flask import Flask, request
 from urllib.parse import unquote
-from google.cloud import firestore
-from elasticsearch import Elasticsearch
 import tflite_runtime.interpreter as tflite
 
-es = Elasticsearch(["http://35.190.172.118:9200/"])
 emotionNames = ["Afraid", "Angry", "Disgusted", "Happy", "Neutral", "Sad", "Surprised"]
 
 # Initialisation
