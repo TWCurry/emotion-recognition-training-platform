@@ -1,4 +1,4 @@
-import json, flask
+import json, flask, time
 from flask import Flask, request
 
 # Initialisation
@@ -22,7 +22,8 @@ def logMetric():
         "imageNames": imageNames,
         "typeToIdentify": typeToIdentify,
         "responseIndex": responseIndex,
-        "emotion": emotion
+        "emotion": emotion,
+        "timestamp": str(time.time())
     }
     f = open("metrics.txt", "a")
     f.write(f"{json.dumps(logMessage)}\n")
