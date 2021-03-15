@@ -32,6 +32,17 @@ def logMetric():
     response.headers.add("Access-Control-Allow-Origin", "*")
     return response, 200
 
+@app.route("/getMetrics", methods=["GET"])
+def getMetrics():
+    metricsData = []
+    f = open("metrics.txt", "r")
+    for line in f:
+        metricsData.append(line)
+    f.close()
+    response = flask.jsonify({"body": metricsData})
+    response.headers.add("Access-Control-Allow-Origin", "*")
+    return response, 200
+
 
 if __name__ == "__main__":
     app.run(port=5002)
