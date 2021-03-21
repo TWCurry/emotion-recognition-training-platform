@@ -68,7 +68,7 @@ def identifyBrickType():
             indicesContainingImage.append(i)
 
     if len(indicesContainingImage) == 0:
-        indicesContainingImage.append(random.randint(0, len(imageNames-1)))
+        indicesContainingImage.append(random.choice([int(0), int(1)]))
 
     response = flask.jsonify({"body": indicesContainingImage})
     response.headers.add("Access-Control-Allow-Origin", "*")
