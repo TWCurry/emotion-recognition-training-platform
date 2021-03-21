@@ -13,11 +13,21 @@ body {
 h1 {
     text-align: center;
 }
-#contents {
+#content {
     border: 1px solid black;
     position: relative;
     margin: auto;
     width: 90%;
     height: 90%;
     border-radius: 10px;
+}
+canvas {
+    width: 400px;
+    height: 200px;
+}
+#metricsTable {
+    width: 100%;
+}
+td {
+    border-bottom: 1px solid black;
 }

@@ -23,7 +23,7 @@ def logMetric():
         "typeToIdentify": typeToIdentify,
         "responseIndex": responseIndex,
         "emotion": emotion,
-        "timestamp": str(time.time())
+        "timestamp": str(int(time.time()))
     }
     f = open("metrics.txt", "a")
     f.write(f"{json.dumps(logMessage)}\n")
