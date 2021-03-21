@@ -2,6 +2,8 @@ var metricsApiUrl = "http://localhost:5002";
 var modelNames = [];
 var emotionCounts = {};
 var emotionTrends = {};
+var emotionTrendsAggregate = {};
+var aggregateDatapointNo = 50; // Number of datapoints to aggregate for trend line
 var emotions = ["Afraid", "Angry", "Disgusted", "Happy", "Neutral", "Sad", "Surprised"];
 //  If emotion is positive, we assume the AI was correct
 var positiveEmotions = ["Happy"]
@@ -15,27 +17,44 @@ var dragOptions = {
 $( document ).ready(function() {
     let bodyHtml = "<table id=\"metricsTable\">";
     $.get(metricsApiUrl+"/getMetrics", function(resp) {
+        let count = 0;
+        let currentEmotionAggregate = 0;
+        let aggregateTimestamp = new Date(JSON.parse(resp.body[0])["timestamp"]*1000);
         resp.body.forEach(function(element) {
             element = JSON.parse(element);
             if (!(modelNames.includes(element["modelName"]))) {
                 modelNames.push(element["modelName"]);
                 emotionCounts[element["modelName"]] = {"counts": [0,0,0,0,0,0,0]};
                 emotionTrends[element["modelName"]] = []
+                emotionTrendsAggregate[element["modelName"]] = []
             }
-            // Update metric tallys
+            // Update metric tallies
+            let emotionScore;
             emotionCounts[element["modelName"]]["counts"][emotions.indexOf(element["emotion"])] += 1;
             if (positiveEmotions.includes(element["emotion"])) {
-                emotionTrends[element["modelName"]].push({"x": new Date(element["timestamp"]*1000), "y": 1})
+                emotionTrends[element["modelName"]].push({"x": new Date(element["timestamp"]*1000), "y": 1});
+                emotionScore = 1;
             }
             if (negativeEmotions.includes(element["emotion"])) {
-                emotionTrends[element["modelName"]].push({"x": new Date(element["timestamp"]*1000), "y": 0})
+                emotionTrends[element["modelName"]].push({"x": new Date(element["timestamp"]*1000), "y": 0});
+                emotionScore = 0;
             }
             if (neutralEmotions.includes(element["emotion"])) {
-                emotionTrends[element["modelName"]].push({"x": new Date(element["timestamp"]*1000), "y": 0.5})
+                emotionTrends[element["modelName"]].push({"x": new Date(element["timestamp"]*1000), "y": 0.5});
+                emotionScore = 0.5;
             }
+            if (count % aggregateDatapointNo == 0) {
+                emotionTrendsAggregate[element["modelName"]].push({"x": aggregateTimestamp, "y": currentEmotionAggregate});
+                currentEmotionAggregate = emotionScore;
+                aggregateTimestamp = new Date(element["timestamp"]*1000);
+            } else {
+                currentEmotionAggregate = (currentEmotionAggregate + emotionScore) / 2
+            }
+            count += 1;
         });
         console.log(emotionCounts)
         console.log(emotionTrends)
+        console.log(emotionTrendsAggregate)
         // Construct elements
         modelNames.forEach(function(model) {
             bodyHtml += `<tr><td>${model}</td>`;
@@ -91,7 +110,14 @@ $( document ).ready(function() {
                         label: "Positivity",
                         borderColor: "green",
                         backgroundColor: "rgba(0,255,0,0.2)",
-                        data: emotionTrends[model]
+                        data: emotionTrends[model],
+                        order: 2
+                    }, {
+                        label: "Aggregate Positivity",
+                        borderColor: "rgba(255,0,0,0.4)",
+                        backgroundColor: "rgba(255,0,0,0.2)",
+                        data: emotionTrendsAggregate[model],
+                        type: "line"
                     }]
                 },
                 options: {
