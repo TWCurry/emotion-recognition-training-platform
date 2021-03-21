@@ -1,4 +1,4 @@
-import flask, random, base64, cv2, sys, json, os
+import flask, random, base64, cv2, sys, json, os, random
 from flask import Flask, request
 import numpy as np
 import tensorflow as tf
@@ -66,6 +66,9 @@ def identifyBrickType():
         # If current image contains chosen brick type:
         if classType == typeToIdentify:
             indicesContainingImage.append(i)
+
+    if len(indicesContainingImage) == 0:
+        indicesContainingImage.append(random.randint(0, len(imageNames)))
 
     response = flask.jsonify({"body": indicesContainingImage})
     response.headers.add("Access-Control-Allow-Origin", "*")
