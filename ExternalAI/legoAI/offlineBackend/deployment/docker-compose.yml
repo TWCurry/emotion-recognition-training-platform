@@ -1,6 +1,0 @@
-version: "3.8"
-services:
-  lego-app:
-    image: localhost:5001/lego-api:latest
-    ports:
-      - "5002:5000"
