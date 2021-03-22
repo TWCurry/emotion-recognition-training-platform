@@ -5,7 +5,7 @@ from flask import Flask, request
 from urllib.parse import unquote
 import tflite_runtime.interpreter as tflite
 
-autoTrainingApiUrl = "http://127.0.0.1:5001/trainModel"
+autoTrainingApiUrl = "http://127.0.0.1:5001/storeDetails"
 metricApiUrl = "http://127.0.0.1:5002"
 emotionNames = ["Afraid", "Angry", "Disgusted", "Happy", "Neutral", "Sad", "Surprised"]
 
@@ -144,7 +144,7 @@ def storeTrainingData():
         if r.status_code < 200 or r.status_code > 299:
             raise Exception(f"({r.status_code}) {r.json()}")
     except Exception as e:
-        print(f"Could not train model - {e}")
+        print(f"Could not store training details - {e}")
         response = flask.jsonify({"body": f"Could not train model - {e}"})
         response.headers.add("Access-Control-Allow-Origin", "*")
         return response, 500

@@ -3,7 +3,7 @@ var modelNames = [];
 var emotionCounts = {};
 var emotionTrends = {};
 var emotionTrendsAggregate = {};
-var aggregateDatapointNo = 33; // Number of datapoints to aggregate for trend line
+var aggregateDatapointNo = 199; // Number of datapoints to aggregate for trend line
 var emotions = ["Afraid", "Angry", "Disgusted", "Happy", "Neutral", "Sad", "Surprised"];
 //  If emotion is positive, we assume the AI was correct
 var positiveEmotions = ["Happy"]
