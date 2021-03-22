@@ -3,7 +3,7 @@ var modelNames = [];
 var emotionCounts = {};
 var emotionTrends = {};
 var emotionTrendsAggregate = {};
-var aggregateDatapointNo = 50; // Number of datapoints to aggregate for trend line
+var aggregateDatapointNo = 33; // Number of datapoints to aggregate for trend line
 var emotions = ["Afraid", "Angry", "Disgusted", "Happy", "Neutral", "Sad", "Surprised"];
 //  If emotion is positive, we assume the AI was correct
 var positiveEmotions = ["Happy"]
@@ -18,7 +18,7 @@ $( document ).ready(function() {
     let bodyHtml = "<table id=\"metricsTable\">";
     $.get(metricsApiUrl+"/getMetrics", function(resp) {
         let count = 0;
-        let currentEmotionAggregate = 0;
+        let emotionScores = [];
         let aggregateTimestamp = new Date(JSON.parse(resp.body[0])["timestamp"]*1000);
         resp.body.forEach(function(element) {
             element = JSON.parse(element);
@@ -26,7 +26,7 @@ $( document ).ready(function() {
                 modelNames.push(element["modelName"]);
                 emotionCounts[element["modelName"]] = {"counts": [0,0,0,0,0,0,0]};
                 emotionTrends[element["modelName"]] = []
-                emotionTrendsAggregate[element["modelName"]] = []
+                emotionTrendsAggregate[element["modelName"]] = [{"x": new Date(element["timestamp"]*1000), "y": 0.5}] // Set first value to 50% as initial (random chance) accuracy will be 50%
             }
             // Update metric tallies
             let emotionScore;
@@ -43,12 +43,16 @@ $( document ).ready(function() {
                 emotionTrends[element["modelName"]].push({"x": new Date(element["timestamp"]*1000), "y": 0.5});
                 emotionScore = 0.5;
             }
-            if (count % aggregateDatapointNo == 0) {
-                emotionTrendsAggregate[element["modelName"]].push({"x": aggregateTimestamp, "y": currentEmotionAggregate});
-                currentEmotionAggregate = emotionScore;
+            emotionScores.push(emotionScore);
+            if (count % aggregateDatapointNo == 0 && count != 0) {
+                var sum = 0;
+                for( var i = 0; i < emotionScores.length; i++ ){
+                    sum += parseInt(emotionScores[i], 10 );
+                }
+                emotionScoreAverage = sum/emotionScores.length;
+                emotionTrendsAggregate[element["modelName"]].push({"x": new Date(element["timestamp"]*1000), "y": emotionScoreAverage});
+                emotionScores = [];
                 aggregateTimestamp = new Date(element["timestamp"]*1000);
-            } else {
-                currentEmotionAggregate = (currentEmotionAggregate + emotionScore) / 2
             }
             count += 1;
         });
@@ -142,3 +146,7 @@ $( document ).ready(function() {
         });
     });
 });
+
+function updateTrendAggregationLevel(level){
+    $("#aggLevel").html(level);
+}
