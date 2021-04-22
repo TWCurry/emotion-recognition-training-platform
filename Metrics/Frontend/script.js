@@ -3,7 +3,7 @@ var modelNames = [];
 var emotionCounts = {};
 var emotionTrends = {};
 var emotionTrendsAggregate = {};
-var aggregateDatapointNo = 199; // Number of datapoints to aggregate for trend line
+var aggregateDatapointNo = 99; // Number of datapoints to aggregate for trend line
 var emotions = ["Afraid", "Angry", "Disgusted", "Happy", "Neutral", "Sad", "Surprised"];
 //  If emotion is positive, we assume the AI was correct
 var positiveEmotions = ["Happy"]
@@ -111,12 +111,12 @@ $( document ).ready(function() {
                 type: 'line',
                 data: {
                     datasets: [{
-                        label: "Positivity",
-                        borderColor: "green",
-                        backgroundColor: "rgba(0,255,0,0.2)",
-                        data: emotionTrends[model],
-                        order: 2
-                    }, {
+                    //     label: "Positivity",
+                    //     borderColor: "green",
+                    //     backgroundColor: "rgba(0,255,0,0.2)",
+                    //     data: emotionTrends[model],
+                    //     order: 2
+                    // }, {
                         label: "Aggregate Positivity",
                         borderColor: "rgba(255,0,0,0.4)",
                         backgroundColor: "rgba(255,0,0,0.2)",
@@ -125,10 +125,17 @@ $( document ).ready(function() {
                     }]
                 },
                 options: {
-                    responsive: true,
+                    // responsive: true,
                     scales: {
                         xAxes: [{
                             type: 'time'
+                        }],
+                        yAxes: [{
+                            display: true,
+                            ticks: {
+                                beginAtZero: true,
+                                max: 1
+                            }
                         }]
                     },
                     plugins: {
