@@ -68,6 +68,7 @@ def main():
     ])
 
     model = keras.models.load_model(outputModelDirectory)
+    model.evaluate(trainingData, trainingLabels)
 
     # Compile model
     model.compile(
