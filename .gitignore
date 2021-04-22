@@ -10,3 +10,5 @@ outputModel*
 *.tflite
 */model/*
 model
+.vscode
+.vscode/*
