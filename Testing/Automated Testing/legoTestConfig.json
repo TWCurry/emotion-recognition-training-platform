@@ -1,0 +1,103 @@
+{
+    "config":{
+        "legoApiUrl": "http://localhost:5003"
+    },
+    "tests": [
+        {
+            "name": "Identify Brick Type Functional Test",
+            "url": "legoApiUrl",
+            "path": "/identifyBrickType",
+            "method": "post",
+            "params": {},
+            "body": {
+                "imageNames": "[\"legoDataset/3040/201706162106-0223.png\",\"legoDataset/3022/201706161906-0051.png\"]",
+                "typeToIdentify": "3040"
+            },
+            "expectedResponseCodes": ["200"]
+        },
+        {
+            "name": "Identify Brick Type Incorrect Method",
+            "url": "legoApiUrl",
+            "path": "/identifyBrickType",
+            "method": "get",
+            "params": {},
+            "body": {
+                "imageNames": "[\"legoDataset/3040/201706162106-0223.png\",\"legoDataset/3022/201706161906-0051.png\"]",
+                "typeToIdentify": "3040"
+            },
+            "expectedResponseCodes": ["405"]
+        },
+        {
+            "name": "Identify Brick Type Missing Image Names",
+            "url": "legoApiUrl",
+            "path": "/identifyBrickType",
+            "method": "post",
+            "params": {},
+            "body": {
+                "typeToIdentify": "3040"
+            },
+            "expectedResponseCodes": ["400"]
+        },
+        {
+            "name": "Identify Brick Type Missing Type To Identify",
+            "url": "legoApiUrl",
+            "path": "/identifyBrickType",
+            "method": "post",
+            "params": {},
+            "body": {
+                "imageNames": "[\"legoDataset/3040/201706162106-0223.png\",\"legoDataset/3022/201706161906-0051.png\"]"
+            },
+            "expectedResponseCodes": ["400"]
+        },
+        {
+            "name": "Identify Brick Type Missing Body",
+            "url": "legoApiUrl",
+            "path": "/identifyBrickType",
+            "method": "post",
+            "params": {},
+            "body": {},
+            "expectedResponseCodes": ["400"]
+        },
+        {
+            "name": "Fetch Images Happy Path",
+            "url": "legoApiUrl",
+            "path": "/fetchImages",
+            "method": "get",
+            "params": {},
+            "body": {},
+            "expectedResponseCodes": ["200"]
+        },
+        {
+            "name": "Fetch Images Incorrect Method",
+            "url": "legoApiUrl",
+            "path": "/fetchImages",
+            "method": "post",
+            "params": {},
+            "body": {},
+            "expectedResponseCodes": ["405"]
+        },
+        {
+            "name": "Fetch Images Ignore Params",
+            "url": "legoApiUrl",
+            "path": "/fetchImages",
+            "method": "get",
+            "params": {
+                "test": "test",
+                "paramName": "notReal"
+            },
+            "body": {},
+            "expectedResponseCodes": ["200"]
+        },
+        {
+            "name": "Fetch Images Ignore Body",
+            "url": "legoApiUrl",
+            "path": "/fetchImages",
+            "method": "get",
+            "params": {},
+            "body": {
+                "test": "test"
+            },
+            "expectedResponseCodes": ["200"]
+        }
+    ]
+}

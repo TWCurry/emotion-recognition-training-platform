@@ -1,0 +1,11 @@
+{    
+    "customerModels": [
+        {   
+            "modelName": "legoAI",
+            "modelPath": "../../ExternalAI/legoAI/offlineBackend/API/model",
+            "datasetPath": "../../ExternalAI/legoAI/offlineBackend/API/",
+            "datasetName": "legoDataset",
+            "imageDimensions": ["200", "200"]
+        }
+    ]
+}

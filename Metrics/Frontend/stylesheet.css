@@ -1,0 +1,33 @@
+@font-face {
+    font-family: Alcubierre;
+    src: url("assets/Alcubierre.otf") format("opentype");
+}
+@font-face {
+    font-family: noto-sans;
+    src: url("assets/NotoSans-Regular.ttf") format("truetype");
+}
+body {
+    font-family: "noto-sans", sans-serif;
+    font-weight: bold;
+}
+h1 {
+    text-align: center;
+}
+#content {
+    border: 1px solid black;
+    position: relative;
+    margin: auto;
+    width: 90%;
+    height: 90%;
+    border-radius: 10px;
+}
+canvas {
+    width: 400px;
+    height: 200px;
+}
+#metricsTable {
+    width: 100%;
+}
+td {
+    border-bottom: 1px solid black;
+}
