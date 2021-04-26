@@ -6,7 +6,6 @@ dataSet/*
 *.csv
 outputModel
 outputModel*
-*.min.js
 *.tflite
 */model/*
 model
