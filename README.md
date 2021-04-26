@@ -14,7 +14,7 @@ Note: This is purely for the offline implementation. The GCP implementation take
 2. Download the trained FER model. It can be fetched from https://fer-application-cloudformation-templates.s3.eu-west-2.amazonaws.com/model.tflite.
 3. Copy the downloaded FER model (model.tflite) to /API/Offline/model.tflite
 4. Download the dataset (for the external AI model). It can be downloaded from https://fer-application-cloudformation-templates.s3.eu-west-2.amazonaws.com/legoDataset.zip.
-5. Extract the dataset to /offlineBackend/API/ (it should create a "loegoDataset" folder.)
+5. Extract the dataset to /offlineBackend/API/ (it should create a "legoDataset" folder.)
 6. Run services. To run each service, you must open an individual terminal window (either in Linux, and navigate to the following directories to run each microservice:
     * FER microservice: /API/Offline
     * Autotraining microservice: /AutoTraining/Offline
